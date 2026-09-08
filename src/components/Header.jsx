@@ -60,7 +60,7 @@ export default function Header() {
           <div className="flex items-center gap-4">
             <Link to="/get-a-quote" className="font-medium hover:text-white">Get a Quote / Book a Consultation</Link>
             <span className="text-white/30">·</span>
-            <Link to="/admin-login" className="font-medium text-white/60 hover:text-white hidden">Staff Login</Link>
+            
           </div>
         </div>
       </div>

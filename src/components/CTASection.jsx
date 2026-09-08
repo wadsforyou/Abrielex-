@@ -28,9 +28,9 @@ export default function CTASection({ title, description }) {
           <Link to="/contact" className="border border-white/25 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-white/10">
             Contact Us
           </Link>
-          <a href={whatsappLink} target="_blank" rel="noreferrer" className="border border-white/25 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-white/10 hidden">
-            WhatsApp Us
-          </a>
+          
+
+          
         </div>
       </div>
     </section>);
