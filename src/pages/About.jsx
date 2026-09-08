@@ -60,7 +60,7 @@ export default function About() {
         <div className="mx-auto max-w-4xl px-6 py-20">
           <SectionHeading eyebrow="Our story" title="Built to make compliance simple" />
           <p className="mt-6 text-base leading-relaxed text-muted-foreground">
-            Abrielex was founded to provide value-for-money business solutions to entrepreneurs and
+            Abrielex was founded to provide professional business solutions to entrepreneurs and
             organisations who need professional help with registration, tax, procurement and
             financial matters. We recognised that many businesses struggle with the complexity of
             regulatory compliance, and we set out to make the process straightforward, affordable and
@@ -77,7 +77,7 @@ export default function About() {
             <Target className="h-8 w-8 text-primary" strokeWidth={1.5} />
             <h3 className="mt-5 font-serif-display text-2xl font-bold">Our Mission</h3>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              To provide accessible, professional and value-for-money business solutions that help
+              To provide accessible, professional business solutions that help
               individuals and organisations register, comply and grow with confidence.
             </p>
           </div>
