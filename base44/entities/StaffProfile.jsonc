@@ -1,0 +1,65 @@
+{
+  "name": "StaffProfile",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "full_name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "staff_role": {
+      "type": "string",
+      "enum": [
+        "super_admin",
+        "administrator",
+        "consultant",
+        "accountant",
+        "support"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "permissions": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_id",
+    "staff_role"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "name": "QuoteRequest",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "client_type": {
+      "type": "string",
+      "enum": [
+        "Individual",
+        "Business"
+      ],
+      "default": "Individual"
+    },
+    "entity_type": {
+      "type": "string"
+    },
+    "service_category": {
+      "type": "string"
+    },
+    "specific_service": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "preferred_contact_method": {
+      "type": "string",
+      "enum": [
+        "Email",
+        "Phone",
+        "WhatsApp"
+      ],
+      "default": "Email"
+    },
+    "additional_info": {
+      "type": "string"
+    },
+    "document_url": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "in_review",
+        "quoted",
+        "closed"
+      ],
+      "default": "new"
+    }
+  },
+  "required": [
+    "name",
+    "email",
+    "phone",
+    "country",
+    "service_category",
+    "description"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

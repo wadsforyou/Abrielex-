@@ -1,0 +1,72 @@
+{
+  "name": "Service",
+  "type": "object",
+  "properties": {
+    "category_slug": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "benefits": {
+      "type": "string"
+    },
+    "requirements": {
+      "type": "string"
+    },
+    "process": {
+      "type": "string"
+    },
+    "processing_time": {
+      "type": "string"
+    },
+    "faqs": {
+      "type": "string"
+    },
+    "related_services": {
+      "type": "string"
+    },
+    "country_code": {
+      "type": "string"
+    },
+    "country_note": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "category_slug",
+    "name"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
