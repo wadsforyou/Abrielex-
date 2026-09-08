@@ -9,11 +9,11 @@ import FAQAccordion from "@/components/FAQAccordion";
 import CTASection from "@/components/CTASection";
 import Seo from "@/components/Seo";
 import { Image } from "@/components/ui/image";
+import { useCountry } from "@/lib/CountryContext";
 import {
-  serviceCategories,
+  getCountryServices,
   generalFaqs,
   resources,
-  testimonials,
   companyInfo,
 } from "@/lib/siteData";
 
@@ -25,7 +25,7 @@ const whyChoose = [
   { icon: Clock, title: "Remote & online", desc: "Engage us from anywhere — no office visit required across our coverage areas." },
   { icon: Users, title: "Personal service", desc: "Direct, professional support tailored to your business or individual needs." },
   { icon: FileCheck2, title: "End-to-end handling", desc: "From registration to ongoing maintenance — we manage the full process." },
-  { icon: Sparkles, title: "Value for money", desc: "Professional solutions priced to deliver genuine value to your business." },
+  { icon: Sparkles, title: "Secure & reliable", desc: "Professional solutions that protect and grow your business with confidence." },
 ];
 
 const howItWorks = [
@@ -36,9 +36,12 @@ const howItWorks = [
 ];
 
 export default function Home() {
+  const { country } = useCountry();
+  const countryServices = getCountryServices(country.code);
+
   return (
     <>
-      <Seo title="Abrielex Business Consultancy — Secure Your Business With Us" description="Professional business registration, ZIMRA tax, PRAZ, bookkeeping and compliance services across Zimbabwe, South Africa, Zambia, Mozambique and Australia." image={companyInfo.logoUrl} />
+      <Seo title="Abrielex Business Consultancy — Secure Your Business With Us" description="Professional business registration, tax, procurement, bookkeeping and compliance services across Zimbabwe, South Africa, Zambia, Mozambique and Australia." image={companyInfo.logoUrl} />
       <HeroSection />
 
       {/* INTRODUCTION */}
@@ -69,12 +72,12 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-6 py-20">
           <SectionHeading
             align="center"
-            eyebrow="What we do"
+            eyebrow={`What we do — ${country.name}`}
             title="Main service categories"
-            description="Five core service dossiers covering the full lifecycle of your business — from registration to ongoing compliance and growth."
+            description="Five core service dossiers covering the full lifecycle of your business — from registration to ongoing compliance and growth. Select your country in the header to see country-specific services."
           />
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {serviceCategories.map((s, i) => (
+            {countryServices.map((s, i) => (
               <ServiceCard key={s.slug} service={s} index={i} />
             ))}
           </div>
@@ -120,54 +123,18 @@ export default function Home() {
             <SectionHeading
               eyebrow="International coverage"
               title="Serving businesses across borders"
-              description="From our base in Bulawayo, we cover major Zimbabwean cities and regions, with remote services extending across Southern Africa and beyond. Select a country in the header to see country-specific regulatory information."
+              description="From our base in Bulawayo, we cover major Zimbabwean cities and regions, with remote services extending across Southern Africa and beyond. Select a country in the header to see country-specific services and regulatory information."
             />
             <ul className="mt-8 flex flex-wrap gap-2">
               {companyInfo.coverage.map((c) => (
                 <li key={c} className="rounded border border-border bg-card px-3 py-1.5 text-sm">{c}</li>
               ))}
             </ul>
-            <Link to="/country-services" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
-              Explore country services <ArrowRight className="h-4 w-4" />
+            <Link to="/services" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+              Explore our services <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
           <CoverageMap className="aspect-[4/3]" />
-        </div>
-      </section>
-
-      {/* FEATURED SERVICES */}
-      <section className="border-b border-border bg-muted/30">
-        <div className="mx-auto max-w-7xl px-6 py-20">
-          <SectionHeading align="center" eyebrow="Featured" title="Featured services" description="Start with our most-requested business solutions." />
-          <div className="mt-12 grid gap-5 md:grid-cols-3">
-            {serviceCategories.slice(0, 3).map((s, i) => (
-              <ServiceCard key={s.slug} service={s} index={i} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* TESTIMONIALS — CMS ready */}
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-7xl px-6 py-20">
-          <SectionHeading align="center" eyebrow="Success stories" title="Testimonials" description="Client testimonials will appear here once published." />
-          {testimonials.length > 0 ? (
-            <div className="mt-12 grid gap-5 md:grid-cols-3">
-              {testimonials.map((t, i) => (
-                <blockquote key={i} className="border border-border bg-card p-7">
-                  <p className="font-serif-display text-lg italic">"{t.quote}"</p>
-                  <footer className="mt-4 text-sm text-muted-foreground">— {t.author}</footer>
-                </blockquote>
-              ))}
-            </div>
-          ) : (
-            <div className="mt-12 flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-muted/30 px-6 py-16 text-center">
-              <p className="max-w-md text-sm text-muted-foreground">
-                This section is ready for client testimonials. Once added through the admin dashboard,
-                success stories will be displayed here.
-              </p>
-            </div>
-          )}
         </div>
       </section>
 

@@ -10,10 +10,8 @@ const navLinks = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
   { to: "/services", label: "Services" },
-  { to: "/country-services", label: "Country Services" },
   { to: "/resources", label: "Resources" },
   { to: "/faq", label: "FAQ" },
-  { to: "/careers", label: "Careers" },
   { to: "/contact", label: "Contact" },
 ];
 
@@ -60,11 +58,9 @@ export default function Header() {
             <span className="text-white/50">Office No. 116, Lutheran House, Bulawayo</span>
           </div>
           <div className="flex items-center gap-4">
-            <Link to="/get-a-quote" className="font-medium hover:text-white">Get a Quote</Link>
-            <Link to="/book-consultation" className="font-medium hover:text-white">Book a Consultation</Link>
+            <Link to="/get-a-quote" className="font-medium hover:text-white">Get a Quote / Book a Consultation</Link>
             <span className="text-white/30">·</span>
-            <Link to="/login" className="font-medium hover:text-white">Client Login</Link>
-            <Link to="/admin-login" className="font-medium text-white/60 hover:text-white">Staff</Link>
+            <Link to="/admin-login" className="font-medium text-white/60 hover:text-white">Staff Login</Link>
           </div>
         </div>
       </div>
@@ -111,6 +107,12 @@ export default function Header() {
             <div className="hidden sm:block">
               <CountrySelector />
             </div>
+            <Link
+              to="/contact"
+              className="hidden items-center bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90 lg:flex"
+            >
+              Contact Us
+            </Link>
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
@@ -175,10 +177,10 @@ export default function Header() {
             </nav>
             <div className="mt-auto space-y-2 border-t border-border p-4">
               <Link to="/get-a-quote" onClick={() => setMobileOpen(false)} className="block w-full rounded-md bg-primary px-4 py-3 text-center text-sm font-semibold text-primary-foreground">
-                Get a Quote
+                Get a Quote / Book a Consultation
               </Link>
-              <Link to="/book-consultation" onClick={() => setMobileOpen(false)} className="block w-full rounded-md border border-border px-4 py-3 text-center text-sm font-semibold text-foreground">
-                Book a Consultation
+              <Link to="/contact" onClick={() => setMobileOpen(false)} className="block w-full rounded-md border border-border px-4 py-3 text-center text-sm font-semibold text-foreground">
+                Contact Us
               </Link>
             </div>
           </div>

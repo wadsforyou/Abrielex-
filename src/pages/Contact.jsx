@@ -1,12 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Phone, Mail, MapPin, MessageCircle, Facebook, Loader2, CheckCircle2, Clock } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
 import CoverageMap from "@/components/CoverageMap";
-import { companyInfo, whatsappLink, telLink, mailLink } from "@/lib/siteData";
+import { useCountry } from "@/lib/CountryContext";
+import { getCountryServiceTitle, companyInfo, whatsappLink, telLink, mailLink } from "@/lib/siteData";
 import { base44 } from "@/api/base44Client";
+import { notifyAdmin } from "@/lib/notifyAdmin";
 
 export default function Contact() {
-  const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
+  const { country, location } = useCountry();
+  const [params] = useSearchParams();
+  const serviceSlug = params.get("service") || "";
+  const serviceTitle = useMemo(() => (serviceSlug ? getCountryServiceTitle(country.code, serviceSlug) : ""), [country.code, serviceSlug]);
+
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    subject: serviceTitle ? `Enquiry about ${serviceTitle}` : "",
+    message: serviceTitle ? `I'm interested in ${serviceTitle} (${country.name}). Please contact me.` : "",
+  });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
@@ -20,7 +34,23 @@ export default function Contact() {
     }
     setSubmitting(true);
     try {
-      await base44.entities.ContactMessage.create(form);
+      await base44.entities.ContactMessage.create({
+        ...form,
+        country: country.name,
+        state: location.state || "",
+        city: location.city || "",
+        service_category: serviceTitle || "",
+      });
+      await notifyAdmin("contact_message", {
+        client_name: form.name,
+        country: country.name,
+        location: [location.state, location.city].filter(Boolean).join(", ") || "—",
+        service_category: serviceTitle || "—",
+        subject: form.subject || "—",
+        email: form.email,
+        phone: form.phone || "—",
+        message: form.message,
+      });
       setSubmitted(true);
       setForm({ name: "", email: "", phone: "", subject: "", message: "" });
     } catch {
@@ -45,7 +75,7 @@ export default function Contact() {
             <span className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Contact Us</span>
             <span className="h-px w-8 bg-primary" />
           </div>
-          <h1 className="font-serif-display text-4xl font-bold sm:text-5xl md:text-6xl text-balance">Contact the agency</h1>
+          <h1 className="font-serif-display text-4xl font-bold sm:text-5xl md:text-6xl text-balance">Contact us</h1>
           <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground">
             Reach us by phone, WhatsApp, email, or visit our office in Bulawayo. We respond to all
             enquiries promptly.
@@ -120,6 +150,12 @@ export default function Contact() {
           {/* contact form */}
           <div>
             <SectionHeading eyebrow="Send a message" title="Contact form" />
+            {serviceTitle && (
+              <div className="mt-6 rounded-md border border-primary/20 bg-primary/5 px-4 py-3 text-sm">
+                <span className="font-semibold text-primary">Service context: </span>
+                <span className="text-muted-foreground">{country.name} · {serviceTitle}</span>
+              </div>
+            )}
             {submitted ? (
               <div className="mt-6 flex flex-col items-center justify-center rounded-lg border border-primary/30 bg-primary/5 px-6 py-16 text-center">
                 <CheckCircle2 className="h-10 w-10 text-primary" />

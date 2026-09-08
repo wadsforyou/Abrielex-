@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Search, FileText, Filter, Download } from "lucide-react";
-import SectionHeading from "@/components/SectionHeading";
+import { Search, Filter, ChevronDown, ChevronUp } from "lucide-react";
 import CTASection from "@/components/CTASection";
 import { resources, resourceCategories, countries } from "@/lib/siteData";
 
@@ -10,6 +9,7 @@ export default function Resources() {
   const [query, setQuery] = useState(params.get("q") || "");
   const [category, setCategory] = useState("All");
   const [country, setCountry] = useState("All");
+  const [expanded, setExpanded] = useState({});
 
   useEffect(() => {
     setQuery(params.get("q") || "");
@@ -27,6 +27,10 @@ export default function Resources() {
     });
   }, [query, category, country]);
 
+  function toggle(title) {
+    setExpanded((e) => ({ ...e, [title]: !e[title] }));
+  }
+
   return (
     <>
       <section className="border-b border-border bg-muted/30">
@@ -39,7 +43,7 @@ export default function Resources() {
           <h1 className="font-serif-display text-4xl font-bold sm:text-5xl md:text-6xl text-balance">Resources</h1>
           <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground">
             Business guides, compliance information, document checklists and articles — filter by
-            country and category.
+            country and category. Click "View" on any resource to read the full content right here.
           </p>
         </div>
       </section>
@@ -69,20 +73,39 @@ export default function Resources() {
 
           {filtered.length > 0 ? (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {filtered.map((r) => (
-                <article key={r.title} className="group flex flex-col border border-border bg-card p-6 transition-colors hover:border-primary">
-                  <div className="mb-4 flex items-center justify-between">
-                    <span className="text-xs font-semibold uppercase tracking-wide text-primary">{r.type}</span>
-                    <span className="text-xs text-muted-foreground">{r.country}</span>
-                  </div>
-                  <h3 className="font-serif-display text-lg font-semibold group-hover:text-primary">{r.title}</h3>
-                  <p className="mt-2 flex-1 text-sm text-muted-foreground">{r.summary}</p>
-                  <div className="mt-5 flex items-center justify-between border-t border-border pt-4 text-xs text-muted-foreground">
-                    <span>{r.category}</span>
-                    <span className="flex items-center gap-1 font-semibold text-primary"><Download className="h-3.5 w-3.5" /> View</span>
-                  </div>
-                </article>
-              ))}
+              {filtered.map((r) => {
+                const isOpen = !!expanded[r.title];
+                return (
+                  <article key={r.title} className="flex flex-col border border-border bg-card transition-colors hover:border-primary">
+                    <div className="p-6">
+                      <div className="mb-4 flex items-center justify-between">
+                        <span className="text-xs font-semibold uppercase tracking-wide text-primary">{r.type}</span>
+                        <span className="text-xs text-muted-foreground">{r.country}</span>
+                      </div>
+                      <h3 className="font-serif-display text-lg font-semibold">{r.title}</h3>
+                      <p className="mt-2 text-sm text-muted-foreground">{r.summary}</p>
+                    </div>
+                    <div className="mt-auto flex items-center justify-between border-t border-border px-6 py-4 text-xs text-muted-foreground">
+                      <span>{r.category}</span>
+                      <button
+                        onClick={() => toggle(r.title)}
+                        className="flex items-center gap-1 font-semibold text-primary hover:underline"
+                      >
+                        {isOpen ? <><ChevronUp className="h-3.5 w-3.5" /> Hide</> : <><ChevronDown className="h-3.5 w-3.5" /> View</>}
+                      </button>
+                    </div>
+                    {isOpen && r.content && (
+                      <div className="border-t border-border bg-muted/30 px-6 py-5">
+                        <div className="space-y-3 text-sm leading-relaxed text-foreground/80">
+                          {r.content.map((para, i) => (
+                            <p key={i}>{para}</p>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </article>
+                );
+              })}
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-muted/30 px-6 py-20 text-center">

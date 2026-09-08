@@ -21,7 +21,7 @@ export default function Footer() {
             <div className="mb-5">
               <Logo variant="light" className="h-[84px]" />
             </div>
-            <p className="font-serif-display text-lg italic text-white">{companyInfo.tagline}</p>
+            <p className="font-serif-display text-lg italic text-white">{companyInfo.tagline}.</p>
             <p className="mt-4 text-sm leading-relaxed text-white/60">
               Professional business registration, compliance, tax, financial and general business
               consultancy services — delivered in person and online.
@@ -46,11 +46,8 @@ export default function Footer() {
               {[
                 { to: "/about", label: "About Us" },
                 { to: "/services", label: "Services" },
-                { to: "/country-services", label: "Country Services" },
                 { to: "/resources", label: "Resources" },
                 { to: "/faq", label: "FAQ" },
-                { to: "/testimonials", label: "Testimonials" },
-                { to: "/careers", label: "Careers" },
                 { to: "/contact", label: "Contact Us" },
               ].map((l) => (
                 <li key={l.to}>
@@ -69,8 +66,7 @@ export default function Footer() {
                   <Link to={`/services/${s.slug}`} className="text-white/60 transition-colors hover:text-white">{s.title}</Link>
                 </li>
               ))}
-              <li><Link to="/get-a-quote" className="text-white/60 transition-colors hover:text-white">Get a Quote</Link></li>
-              <li><Link to="/book-consultation" className="text-white/60 transition-colors hover:text-white">Book a Consultation</Link></li>
+              <li><Link to="/get-a-quote" className="text-white/60 transition-colors hover:text-white">Get a Quote / Book a Consultation</Link></li>
             </ul>
           </div>
 

@@ -12,6 +12,18 @@
     "phone": {
       "type": "string"
     },
+    "country": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "service_category": {
+      "type": "string"
+    },
     "subject": {
       "type": "string"
     },

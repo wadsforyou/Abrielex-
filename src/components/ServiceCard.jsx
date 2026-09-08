@@ -10,16 +10,16 @@ import {
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
-const iconMap = {
-  Building2,
-  Receipt,
-  FileCheck,
-  Calculator,
-  Briefcase,
+const slugIconMap = {
+  "company-secretarial": Building2,
+  "zimra-tax-customs": Receipt,
+  "praz-vendor-numbers": FileCheck,
+  "bookkeeping-financial": Calculator,
+  "general-services": Briefcase,
 };
 
 export default function ServiceCard({ service, index }) {
-  const Icon = iconMap[service.icon] || Building2;
+  const Icon = slugIconMap[service.slug] || Building2;
   return (
     <Link
       to={`/services/${service.slug}`}

@@ -181,6 +181,60 @@ export const serviceCategories = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// COUNTRY-SPECIFIC SERVICE CATEGORIES
+// Each country shows its own service names, descriptions & regulatory terms.
+// Slugs stay consistent so detail pages & request context remain stable.
+// ---------------------------------------------------------------------------
+export const countryServiceCategories = {
+  ZW: [
+    { slug: "company-secretarial", title: "Company Secretarial Services", short: "Company registrations, director changes, annual returns & document retrieval." },
+    { slug: "zimra-tax-customs", title: "ZIMRA Tax & Customs Services", short: "Tax registration, returns filing, health checkups, assessments & customs." },
+    { slug: "praz-vendor-numbers", title: "PRAZ & Vendor Services", short: "PRAZ registration, vendor numbers, tender bidding & account activations." },
+    { slug: "bookkeeping-financial", title: "Bookkeeping & Financial Services", short: "Accounting, reporting, auditing, reconciliations & financial planning." },
+    { slug: "general-services", title: "General Services", short: "Liquor & shop licenses, agreements, labour relations & more." },
+  ],
+  ZA: [
+    { slug: "company-secretarial", title: "CIPC Company Services", short: "CIPC company registrations, director changes, annual returns & amendments." },
+    { slug: "zimra-tax-customs", title: "SARS Tax & Customs Services", short: "SARS tax registration, returns, eFiling, assessments & customs." },
+    { slug: "praz-vendor-numbers", title: "Supplier & Tender Services", short: "Supplier registration, tender bidding & account management." },
+    { slug: "bookkeeping-financial", title: "Bookkeeping & Financial Services", short: "Accounting, reporting, reconciliations & financial planning." },
+    { slug: "general-services", title: "General Services", short: "Business licensing, agreements, labour relations & more." },
+  ],
+  ZM: [
+    { slug: "company-secretarial", title: "PACRA Company Services", short: "PACRA company registrations, changes, annual returns & document retrieval." },
+    { slug: "zimra-tax-customs", title: "ZRA Tax & Customs Services", short: "ZRA tax registration, returns, assessments & customs clearance." },
+    { slug: "praz-vendor-numbers", title: "Supplier & Tender Services", short: "ZPPA supplier registration, tender bidding & vendor management." },
+    { slug: "bookkeeping-financial", title: "Bookkeeping & Financial Services", short: "Accounting, reporting, reconciliations & financial planning." },
+    { slug: "general-services", title: "General Services", short: "Business licensing, agreements, labour relations & more." },
+  ],
+  MZ: [
+    { slug: "company-secretarial", title: "Business Registration Services", short: "Commercial registry registration, amendments & document retrieval." },
+    { slug: "zimra-tax-customs", title: "Autoridade Tributária de Moçambique (AT) Tax & Customs", short: "AT tax registration, returns, assessments & customs clearance." },
+    { slug: "praz-vendor-numbers", title: "Supplier/Tender & Business Licensing Services", short: "Public procurement registration, tender bidding & business licensing." },
+    { slug: "bookkeeping-financial", title: "Bookkeeping & Financial Services", short: "Accounting, reporting, reconciliations & financial planning." },
+    { slug: "general-services", title: "General Services", short: "Agreements, labour relations & general business support." },
+  ],
+  AU: [
+    { slug: "company-secretarial", title: "ASIC Company Services", short: "ASIC company registration, director changes, annual reviews & amendments." },
+    { slug: "zimra-tax-customs", title: "ATO Tax Services", short: "ATO tax registration, BAS, returns, assessments & tax advice." },
+    { slug: "praz-vendor-numbers", title: "Customs / Import & Export Services", short: "ABN/ACN, customs registration, import/export compliance & supplier setup." },
+    { slug: "bookkeeping-financial", title: "Bookkeeping & Financial Services", short: "Accounting, reporting, reconciliations & financial planning." },
+    { slug: "general-services", title: "General Services", short: "Business licensing, agreements, labour relations & more." },
+  ],
+};
+
+// Resolve the service categories for a country code (falls back to Zimbabwe).
+export function getCountryServices(code) {
+  return countryServiceCategories[code] || countryServiceCategories.ZW;
+}
+
+// Resolve a single country-specific service title by slug.
+export function getCountryServiceTitle(code, slug) {
+  const list = getCountryServices(code);
+  return list.find((s) => s.slug === slug)?.title || serviceCategories.find((s) => s.slug === slug)?.title || slug;
+}
+
 // Full detail per category
 export const serviceDetails = {
   "company-secretarial": {
@@ -566,6 +620,13 @@ export const resources = [
     type: "Guide",
     summary: "Everything you need to know to register and launch a compliant business in Zimbabwe.",
     date: "2026-08-15",
+    content: [
+      "Registering a business in Zimbabwe involves several statutory steps. First, conduct a name search and reservation with the Deeds, Companies & Intellectual Property Registry (DCIP) to confirm your proposed company name is available.",
+      "Once the name is reserved, prepare your Memorandum & Articles of Association, CR5 (directors form) and CR6 (registered office form). You will need the national IDs and proof of residence for each director, plus a registered office address.",
+      "Submit the incorporation documents to the Companies Registry. After processing (typically 5–10 working days), you receive your Certificate of Incorporation. You can then open a company bank account and register with ZIMRA for a tax registration number (BP/F).",
+      "If you intend to bid for government tenders, register with PRAZ and obtain a vendor number. Depending on your trade, you may also need a shop or liquor license from your local municipality.",
+      "Abrielex handles every step on your behalf — from name search through to post-registration compliance — so you can launch your business with confidence.",
+    ],
   },
   {
     title: "Company Registration Document Checklist",
@@ -574,6 +635,17 @@ export const resources = [
     type: "Checklist",
     summary: "A complete checklist of documents required for company registration.",
     date: "2026-08-10",
+    content: [
+      "Proposed company name (provide at least two alternatives in case your first choice is taken).",
+      "National ID or passport copy for each director and shareholder.",
+      "Proof of residence for each director (e.g. utility bill, lease agreement or affidavit).",
+      "Registered office address (physical address where company records are kept).",
+      "Share structure — number of shares, value per share, and allocation among subscribers.",
+      "Subscriber and director details — full names, addresses and occupations.",
+      "Memorandum & Articles of Association (drafted for you by Abrielex).",
+      "CR5 (directors form) and CR6 (registered office form).",
+      "Payment for registry fees and professional service.",
+    ],
   },
   {
     title: "Understanding ZIMRA Tax Obligations",
@@ -582,6 +654,12 @@ export const resources = [
     type: "Article",
     summary: "An overview of common tax obligations for small businesses in Zimbabwe.",
     date: "2026-07-28",
+    content: [
+      "Every registered business in Zimbabwe is required to register with the Zimbabwe Revenue Authority (ZIMRA) and obtain a Business Partner Number (BP/F). This is your tax account identifier for all interactions with ZIMRA.",
+      "Common tax obligations include Pay As You Earn (PAYE) if you have employees, Value Added Tax (VAT) if your turnover exceeds the threshold, and Corporate Income Tax or presumptive tax depending on your business structure.",
+      "Returns must be filed by statutory deadlines. Late filing attracts penalties and interest. A tax clearance certificate confirms your tax affairs are up to date and is often required for tenders, banking and government transactions.",
+      "We recommend a periodic tax health checkup to identify outstanding returns or errors before they become penalties. Abrielex offers registration, returns filing, health checkups and assessment representation.",
+    ],
   },
   {
     title: "PRAZ Registration: What You Need to Know",
@@ -590,6 +668,12 @@ export const resources = [
     type: "Guide",
     summary: "A plain-language guide to registering with PRAZ and securing your vendor number.",
     date: "2026-07-20",
+    content: [
+      "PRAZ (Procurement Regulatory Authority of Zimbabwe) regulates public procurement. To supply goods or services to government, parastatals and public institutions, your business must be registered with PRAZ.",
+      "Registration requires your company registration documents, a valid ZIMRA tax clearance certificate, a bank confirmation letter, director IDs and proof of address, and any relevant trade or professional certificates.",
+      "Once registered, you receive a vendor number — a unique identifier that qualifies your business to receive payments and participate in public procurement.",
+      "Abrielex manages the full PRAZ registration process, vendor number application, tender documentation preparation and account maintenance so you remain eligible to bid for public contracts.",
+    ],
   },
   {
     title: "Bookkeeping Basics for SMEs",
@@ -598,6 +682,12 @@ export const resources = [
     type: "Article",
     summary: "Foundational bookkeeping practices every small business should follow.",
     date: "2026-07-05",
+    content: [
+      "Bookkeeping is the systematic recording of your business's financial transactions. Accurate books are the foundation of compliance, tax filing and informed decision-making.",
+      "Start by separating personal and business finances — open a dedicated business bank account. Record every transaction (income and expenses) and retain source documents such as invoices, receipts and bank statements.",
+      "Reconcile your bank accounts regularly to ensure your records match your bank statements. This catches errors, missing entries and potential fraud early.",
+      "Produce regular management accounts (at minimum monthly or quarterly) so you understand your cash flow, profitability and tax position. Abrielex provides bookkeeping setup, ongoing recording, reconciliations and management reporting.",
+    ],
   },
   {
     title: "Liquor License Application Checklist",
@@ -606,6 +696,17 @@ export const resources = [
     type: "Checklist",
     summary: "Documents and steps required to apply for or renew a liquor license.",
     date: "2026-06-22",
+    content: [
+      "Completed liquor license application form (obtained from your local Liquor Licensing Board).",
+      "Company registration documents (Certificate of Incorporation, CR5, CR6).",
+      "ZIMRA tax clearance certificate.",
+      "Proof of premises — lease agreement or title deeds for the licensed premises.",
+      "Site plan and photographs of the premises.",
+      "Director IDs and proof of address.",
+      "Relevant local authority approvals and zoning clearance.",
+      "Payment of the prescribed licence fee.",
+      "Abrielex handles both new applications and renewals, liaising with the Liquor Licensing Board and local authority on your behalf.",
+    ],
   },
   {
     title: "Tender Bidding: Preparing Your Documentation",
@@ -614,6 +715,12 @@ export const resources = [
     type: "Guide",
     summary: "How to assemble a strong, compliant tender bid dossier.",
     date: "2026-06-10",
+    content: [
+      "A compliant tender bid starts with reading the tender notice carefully and understanding the eligibility, technical and financial requirements before the closing date.",
+      "Assemble your dossier in the order specified: company registration documents, tax clearance, vendor/procurement registration, bank confirmation letter, director IDs, and any requested technical or professional certificates.",
+      "Prepare your technical and financial proposal clearly, addressing every evaluation criterion. Missing or incomplete documents are a common cause of disqualification.",
+      "Submit before the deadline and keep proof of submission. Abrielex prepares and assembles full tender bidding documentation in line with each opportunity's requirements, improving your chances of a compliant, competitive bid.",
+    ],
   },
   {
     title: "Annual Returns: Why They Matter",
@@ -622,6 +729,11 @@ export const resources = [
     type: "Article",
     summary: "The importance of filing annual returns and the risks of non-compliance.",
     date: "2026-05-30",
+    content: [
+      "Annual returns are a statutory filing that updates the Companies Registry on your company's current directors, shareholders, registered office and share structure. Filing on time keeps your company active and in good standing.",
+      "Failure to file annual returns can result in the company being struck off the register, director penalties, and difficulty transacting with banks, government and tendering authorities.",
+      "Abrielex prepares and submits annual returns on your behalf and maintains a compliance calendar so you never miss a statutory deadline.",
+    ],
   },
 ];
 

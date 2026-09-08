@@ -17,16 +17,16 @@ export default function CTASection({ title, description }) {
         <SectionHeading
           align="center"
           eyebrow="Let's get started"
-          title={title || "Ready to get your business compliant?"}
-          description={description || "Request a quote, book a consultation, or contact the agency today. Value for money business solutions, delivered professionally."}
+          title={title || "Ready to secure your business?"}
+          description={description || "Get a quote, book a consultation, or contact us today. Secure Your Business With Us."}
           className="[&_h2]:text-white [&_p]:text-white/70 [&_span]:text-primary [&_.bg-primary]:bg-primary"
         />
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
           <Link to="/get-a-quote" className="group flex items-center gap-2 bg-primary px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90">
-            Get a Quote <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            Get a Quote / Book a Consultation <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </Link>
-          <Link to="/book-consultation" className="border border-white/25 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-white/10">
-            Book a Consultation
+          <Link to="/contact" className="border border-white/25 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-white/10">
+            Contact Us
           </Link>
           <a href={whatsappLink} target="_blank" rel="noreferrer" className="border border-white/25 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-white/10">
             WhatsApp Us

@@ -5,7 +5,7 @@ import ServiceActions from "@/components/ServiceActions";
 import FAQAccordion from "@/components/FAQAccordion";
 import ServiceCard from "@/components/ServiceCard";
 import CTASection from "@/components/CTASection";
-import { serviceDetails, serviceCategories } from "@/lib/siteData";
+import { serviceDetails, serviceCategories, getCountryServices, getCountryServiceTitle } from "@/lib/siteData";
 import { useCountry } from "@/lib/CountryContext";
 
 const sections = [
@@ -57,8 +57,8 @@ export default function ServiceDetail() {
   }
 
   const category = serviceCategories.find((c) => c.slug === slug);
-  const titleByCountry = detail.titleByCountry?.[country.code];
-  const displayTitle = titleByCountry || detail.title;
+  const displayTitle = getCountryServiceTitle(country.code, slug);
+  const countryServices = getCountryServices(country.code);
 
   return (
     <>
@@ -196,9 +196,9 @@ export default function ServiceDetail() {
             <Block id="related" icon={<ArrowRight className="h-5 w-5" />} title="Related services">
               <div className="grid gap-5 sm:grid-cols-2">
                 {detail.related.map((relSlug) => {
-                  const rel = serviceCategories.find((c) => c.slug === relSlug);
+                  const rel = countryServices.find((c) => c.slug === relSlug);
                   if (!rel) return null;
-                  return <ServiceCard key={rel.slug} service={rel} index={serviceCategories.indexOf(rel)} />;
+                  return <ServiceCard key={rel.slug} service={rel} index={countryServices.indexOf(rel)} />;
                 })}
               </div>
             </Block>
