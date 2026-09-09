@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Check, Clock, FileText, ListChecks, Workflow, HelpCircle, ArrowRight, AlertTriangle } from "lucide-react";
+import { Check, Clock, FileText, ListChecks, Workflow, HelpCircle, ArrowRight } from "lucide-react";
 import ServiceActions from "@/components/ServiceActions";
 import FAQAccordion from "@/components/FAQAccordion";
 import ServiceCard from "@/components/ServiceCard";
 import CTASection from "@/components/CTASection";
-import { serviceDetails, serviceCategories, getCountryServices, getCountryServiceTitle } from "@/lib/siteData";
-import { useCountry } from "@/lib/CountryContext";
+import { serviceDetails, serviceCategories } from "@/lib/siteData";
 
 const sections = [
   { id: "overview", label: "Overview" },
@@ -20,7 +19,6 @@ const sections = [
 
 export default function ServiceDetail() {
   const { slug } = useParams();
-  const { country, isConfirmed } = useCountry();
   const [active, setActive] = useState("overview");
   const detail = serviceDetails[slug];
 
@@ -57,8 +55,7 @@ export default function ServiceDetail() {
   }
 
   const category = serviceCategories.find((c) => c.slug === slug);
-  const displayTitle = getCountryServiceTitle(country.code, slug);
-  const countryServices = getCountryServices(country.code);
+  const displayTitle = category?.title || detail.title;
 
   return (
     <>
@@ -80,20 +77,6 @@ export default function ServiceDetail() {
           </div>
         </div>
       </section>
-
-      {/* country context banner */}
-      {!isConfirmed && (
-        <div className="border-b border-amber-300/40 bg-amber-50">
-          <div className="mx-auto flex max-w-7xl items-start gap-3 px-6 py-3 text-sm text-amber-800">
-            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-            <p>
-              You're viewing <strong>{country.name}</strong>. Some regulatory details for this
-              country are marked <strong>"to be confirmed"</strong> and will be verified before being
-              presented as confirmed services.
-            </p>
-          </div>
-        </div>
-      )}
 
       {/* split layout */}
       <section className="border-b border-border">
@@ -196,9 +179,9 @@ export default function ServiceDetail() {
             <Block id="related" icon={<ArrowRight className="h-5 w-5" />} title="Related services">
               <div className="grid gap-5 sm:grid-cols-2">
                 {detail.related.map((relSlug) => {
-                  const rel = countryServices.find((c) => c.slug === relSlug);
+                  const rel = serviceCategories.find((c) => c.slug === relSlug);
                   if (!rel) return null;
-                  return <ServiceCard key={rel.slug} service={rel} index={countryServices.indexOf(rel)} />;
+                  return <ServiceCard key={rel.slug} service={rel} index={serviceCategories.indexOf(rel)} />;
                 })}
               </div>
             </Block>

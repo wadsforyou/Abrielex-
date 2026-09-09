@@ -133,7 +133,7 @@ export default function About() {
                 <MapPin className="h-7 w-7 shrink-0 text-primary" strokeWidth={1.5} />
                 <div>
                   <h4 className="font-serif-display text-lg font-semibold">Areas covered</h4>
-                  <p className="mt-1 text-sm text-muted-foreground">{companyInfo.coverage.join(", ")} and surrounding regions, with remote services across Zimbabwe, South Africa, Zambia, Mozambique and Australia.</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{companyInfo.coverage.join(", ")} and surrounding areas, with remote and online services available wherever you are in Zimbabwe.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4 border border-border bg-card p-6">

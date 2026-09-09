@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Menu, X, Search, Phone } from "lucide-react";
 import Logo from "./Logo";
-import CountrySelector from "./CountrySelector";
 import { companyInfo, telLink } from "@/lib/siteData";
 import { cn } from "@/lib/utils";
 
@@ -49,7 +48,7 @@ export default function Header() {
     <header className="sticky top-0 z-40">
       {/* top utility bar */}
       <div className="hidden border-b border-border bg-foreground text-white/90 lg:block">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-1.5 text-xs">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-1 text-xs">
           <div className="flex items-center gap-5">
             <a href={telLink} className="flex items-center gap-1.5 hover:text-white">
               <Phone className="h-3 w-3" /> {companyInfo.phone}
@@ -72,9 +71,9 @@ export default function Header() {
           scrolled && "shadow-sm"
         )}>
         
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-1.5 sm:px-6">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-1 sm:px-6">
           <Link to="/" className="flex items-center" aria-label="Abrielex home">
-            <Logo className="h-[94px]" />
+            <Logo className="h-[72px]" />
           </Link>
 
           <nav className="hidden items-center gap-1 lg:flex">
@@ -104,9 +103,6 @@ export default function Header() {
               
               <Search className="h-4 w-4" />
             </button>
-            <div className="hidden sm:block">
-              <CountrySelector />
-            </div>
             <Link
               to="/contact"
               className="hidden items-center bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90 lg:flex">
@@ -148,14 +144,10 @@ export default function Header() {
           <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
           <div className="absolute right-0 top-0 flex h-full w-80 max-w-[85%] flex-col bg-card shadow-xl">
             <div className="flex items-center justify-between border-b border-border p-4">
-              <Logo className="h-16" />
+              <Logo className="h-12" />
               <button onClick={() => setMobileOpen(false)} aria-label="Close menu" className="rounded-md p-2 hover:bg-accent">
                 <X className="h-5 w-5" />
               </button>
-            </div>
-            <div className="flex items-center justify-between border-b border-border p-4">
-              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Country</span>
-              <CountrySelector />
             </div>
             <nav className="flex flex-col p-2">
               {navLinks.map((l) =>

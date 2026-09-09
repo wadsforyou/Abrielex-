@@ -1,18 +1,15 @@
 import React, { useState, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { CheckCircle2, Upload, Loader2, FileText, Calendar, FileSpreadsheet, ArrowLeft } from "lucide-react";
-import LocationSelector from "@/components/LocationSelector";
-import { useCountry } from "@/lib/CountryContext";
 import { getCountryServices, consultationTypes, consultationTimeSlots, serviceDetails } from "@/lib/siteData";
 import { base44 } from "@/api/base44Client";
 import { notifyAdmin } from "@/lib/notifyAdmin";
 
 export default function GetAQuote() {
-  const { country, location } = useCountry();
   const [params] = useSearchParams();
   const preselectedSlug = params.get("service") || "";
   const preselectedSpecific = params.get("specific") || "";
-  const countryServices = useMemo(() => getCountryServices(country.code), [country.code]);
+  const countryServices = useMemo(() => getCountryServices(), []);
 
   const preselectedCategory = useMemo(
     () => countryServices.find((s) => s.slug === preselectedSlug)?.title || "",
@@ -69,14 +66,12 @@ export default function GetAQuote() {
             </button>
             {mode === "quote" ? (
               <QuoteForm
-                country={country}
-                location={location}
                 countryServices={countryServices}
                 preselectedCategory={preselectedCategory}
                 preselectedSpecific={preselectedSpecific}
               />
             ) : (
-              <ConsultationForm country={country} location={location} />
+              <ConsultationForm />
             )}
           </div>
         </section>
@@ -103,7 +98,7 @@ function ChoiceCard({ icon, title, desc, cta, onClick }) {
 // ---------------------------------------------------------------------------
 // QUOTE FORM
 // ---------------------------------------------------------------------------
-function QuoteForm({ country, location, countryServices, preselectedCategory, preselectedSpecific }) {
+function QuoteForm({ countryServices, preselectedCategory, preselectedSpecific }) {
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -157,17 +152,17 @@ function QuoteForm({ country, location, countryServices, preselectedCategory, pr
     try {
       await base44.entities.QuoteRequest.create({
         ...form,
-        country: country.name,
-        state: location.state || "",
-        city: location.city || "",
+        country: "Zimbabwe",
+        state: "",
+        city: "",
         document_url: fileUrl || "",
       });
       await notifyAdmin("quote_request", {
         client_name: form.name,
         service_category: form.service_category,
         specific_service: form.specific_service || "—",
-        country: country.name,
-        location: [location.state, location.city].filter(Boolean).join(", ") || "—",
+        country: "Zimbabwe",
+        location: "—",
         email: form.email,
         phone: form.phone,
         description: form.description,
@@ -202,7 +197,7 @@ function QuoteForm({ country, location, countryServices, preselectedCategory, pr
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      <ContextBanner country={country} location={location} category={form.service_category} specific={form.specific_service} />
+      <ContextBanner category={form.service_category} specific={form.specific_service} />
 
       <Fieldset legend="Your details">
         <div className="grid gap-5 sm:grid-cols-2">
@@ -266,7 +261,7 @@ function QuoteForm({ country, location, countryServices, preselectedCategory, pr
 // ---------------------------------------------------------------------------
 // CONSULTATION FORM
 // ---------------------------------------------------------------------------
-function ConsultationForm({ country, location }) {
+function ConsultationForm() {
   const [form, setForm] = useState({
     consultation_type: consultationTypes[0],
     preferred_date: "",
@@ -314,8 +309,8 @@ function ConsultationForm({ country, location }) {
     try {
       await base44.entities.ConsultationBooking.create({
         ...form,
-        country: country.name,
-        location: [location.state, location.city].filter(Boolean).join(", "),
+        country: "Zimbabwe",
+        location: "",
         document_url: fileUrl || "",
       });
       await notifyAdmin("consultation_booking", {
@@ -323,8 +318,8 @@ function ConsultationForm({ country, location }) {
         consultation_type: form.consultation_type,
         preferred_date: form.preferred_date,
         preferred_time: form.preferred_time,
-        country: country.name,
-        location: [location.state, location.city].filter(Boolean).join(", ") || "—",
+        country: "Zimbabwe",
+        location: "—",
         email: form.email,
         phone: form.phone,
         reason: form.reason || "—",
@@ -361,7 +356,7 @@ function ConsultationForm({ country, location }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      <ContextBanner country={country} location={location} />
+      <ContextBanner />
 
       <Fieldset legend="Location & type">
         <div className="grid gap-5 sm:grid-cols-2">
@@ -421,10 +416,8 @@ function ConsultationForm({ country, location }) {
 // ---------------------------------------------------------------------------
 // SHARED UI
 // ---------------------------------------------------------------------------
-function ContextBanner({ country, location, category, specific }) {
-  const parts = [country.name];
-  if (location.state) parts.push(location.state);
-  if (location.city) parts.push(location.city);
+function ContextBanner({ category, specific }) {
+  const parts = ["Zimbabwe"];
   if (category) parts.push(category);
   if (specific) parts.push(specific);
   return (

@@ -4,12 +4,11 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LogIn, Mail, Lock, Loader2, Sparkles } from "lucide-react";
+import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import { safeReturnTo } from "@/lib/authReturnTo";
-import { DEMO_CUSTOMER } from "@/lib/demoConfig";
 
-function resolveReturnTo(fallback = "/portal") {
+function resolveReturnTo(fallback = "/") {
   const raw = new URLSearchParams(window.location.search).get("returnTo");
   if (!raw) return fallback;
   try {
@@ -28,20 +27,15 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [demoLoading, setDemoLoading] = useState(false);
   const returnTo = resolveReturnTo();
-
-  async function doLogin(em, pw) {
-    await base44.auth.loginViaEmailPassword(em, pw);
-    window.location.href = returnTo;
-  }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      await doLogin(email, password);
+      await base44.auth.loginViaEmailPassword(email, password);
+      window.location.href = returnTo;
     } catch (err) {
       setError(err.message || "Invalid email or password");
     } finally {
@@ -49,44 +43,20 @@ export default function Login() {
     }
   }
 
-  async function handleDemo() {
-    setError("");
-    setDemoLoading(true);
-    try {
-      await doLogin(DEMO_CUSTOMER.email, DEMO_CUSTOMER.password);
-    } catch (err) {
-      setError(
-        "Demo account isn't ready yet. Accept the invitation email sent to " +
-          DEMO_CUSTOMER.email +
-          " and set its password to the demo credential, then try again."
-      );
-    } finally {
-      setDemoLoading(false);
-    }
-  }
-
   return (
     <AuthLayout
       icon={LogIn}
-      title="Client Portal Login"
-      subtitle="Access your Abrielex client dashboard"
+      title="Sign in"
+      subtitle="Abrielex Business Consultancy"
       footer={
-        <>
-          Don't have an account?{" "}
-          <Link to="/register" className="font-medium text-primary hover:underline">
-            Create one
-          </Link>
-          <span className="mx-2 text-muted-foreground/40">·</span>
-          <Link to="/admin-login" className="font-medium text-muted-foreground hover:text-primary hover:underline">
-            Staff login
-          </Link>
-        </>
+        <Link to="/forgot-password" className="font-medium text-muted-foreground hover:text-primary hover:underline">
+          Forgot password?
+        </Link>
       }
     >
       {error && (
         <div className="mb-4 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
       )}
-
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
@@ -117,24 +87,6 @@ export default function Login() {
           {loading ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Logging in…</>) : "Log in"}
         </Button>
       </form>
-
-      <div className="relative my-6">
-        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-3 text-muted-foreground">or</span>
-        </div>
-      </div>
-
-      <Button
-        type="button" variant="outline" className="h-12 w-full font-medium"
-        onClick={handleDemo} disabled={demoLoading || loading}
-      >
-        {demoLoading ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Entering demo…</>)
-          : (<><Sparkles className="mr-2 h-4 w-4 text-primary" /> Demo Mode</>)}
-      </Button>
-      <p className="mt-3 text-center text-xs text-muted-foreground">
-        Explore the client portal instantly with a demo account.
-      </p>
     </AuthLayout>
   );
 }

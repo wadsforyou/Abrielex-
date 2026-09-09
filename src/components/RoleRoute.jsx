@@ -29,6 +29,6 @@ export function StaffRoute({ redirect = "/admin-login" }) {
   }, [authChecked, isLoadingAuth, checkUserAuth]);
   if (isLoadingAuth || !authChecked) return <Spinner />;
   if (!isAuthenticated) return <Navigate to={redirect} replace />;
-  if (!isStaff(user)) return <Navigate to="/portal" replace />;
+  if (!isStaff(user)) return <Navigate to="/" replace />;
   return <Outlet />;
 }

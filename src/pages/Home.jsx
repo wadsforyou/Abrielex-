@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, ShieldCheck, Globe2, Clock, Users, FileCheck2, Sparkles } from "lucide-react";
+import { ArrowRight, ShieldCheck, MapPin, Clock, Users, FileCheck2, Sparkles } from "lucide-react";
 import HeroSection from "@/components/home/HeroSection";
 import SectionHeading from "@/components/SectionHeading";
 import ServiceCard from "@/components/ServiceCard";
@@ -9,10 +9,10 @@ import FAQAccordion from "@/components/FAQAccordion";
 import CTASection from "@/components/CTASection";
 import Seo from "@/components/Seo";
 import { Image } from "@/components/ui/image";
-import { useCountry } from "@/lib/CountryContext";
 import {
-  getCountryServices,
+  serviceCategories,
   generalFaqs,
+  countryFaqs,
   resources,
   companyInfo,
 } from "@/lib/siteData";
@@ -20,8 +20,8 @@ import {
 const CONSULT_IMG = "https://media.base44.com/images/public/6a9fbe96952aa2db4053eb18/582a64e5b_generated_10b126d7.jpg";
 
 const whyChoose = [
-  { icon: ShieldCheck, title: "Compliance you can trust", desc: "We keep your business legally compliant with the relevant registries and authorities." },
-  { icon: Globe2, title: "Multi-country coverage", desc: "Services structured for Zimbabwe, South Africa, Zambia, Mozambique and Australia." },
+  { icon: ShieldCheck, title: "Compliance you can trust", desc: "We keep your business legally compliant with the relevant registries and authorities in Zimbabwe." },
+  { icon: MapPin, title: "Multi-city coverage", desc: "Services delivered across Bulawayo, Harare and many more cities throughout Zimbabwe." },
   { icon: Clock, title: "Remote & online", desc: "Engage us from anywhere — no office visit required across our coverage areas." },
   { icon: Users, title: "Personal service", desc: "Direct, professional support tailored to your business or individual needs." },
   { icon: FileCheck2, title: "End-to-end handling", desc: "From registration to ongoing maintenance — we manage the full process." },
@@ -36,12 +36,9 @@ const howItWorks = [
 ];
 
 export default function Home() {
-  const { country } = useCountry();
-  const countryServices = getCountryServices(country.code);
-
   return (
     <>
-      <Seo title="Abrielex Business Consultancy — Secure Your Business With Us" description="Professional business registration, tax, procurement, bookkeeping and compliance services across Zimbabwe, South Africa, Zambia, Mozambique and Australia." image={companyInfo.logoUrl} />
+      <Seo title="Abrielex Business Consultancy — Secure Your Business With Us" description="Professional business registration, tax, procurement, bookkeeping and compliance services across multiple cities in Zimbabwe." image={companyInfo.logoUrl} />
       <HeroSection />
 
       {/* INTRODUCTION */}
@@ -72,12 +69,12 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-6 py-20">
           <SectionHeading
             align="center"
-            eyebrow={`What we do — ${country.name}`}
+            eyebrow="What we do"
             title="Main service categories"
-            description="Five core service dossiers covering the full lifecycle of your business — from registration to ongoing compliance and growth. Select your country in the header to see country-specific services."
+            description="Five core service dossiers covering the full lifecycle of your business — from registration to ongoing compliance and growth."
           />
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {countryServices.map((s, i) => (
+            {serviceCategories.map((s, i) => (
               <ServiceCard key={s.slug} service={s} index={i} />
             ))}
           </div>
@@ -116,22 +113,22 @@ export default function Home() {
         </div>
       </section>
 
-      {/* INTERNATIONAL COVERAGE */}
+      {/* MULTI-CITY COVERAGE */}
       <section className="border-b border-border">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-2 lg:items-center">
           <div>
             <SectionHeading
-              eyebrow="International coverage"
-              title="Serving businesses across borders"
-              description="From our base in Bulawayo, we cover major Zimbabwean cities and regions, with remote services extending across Southern Africa and beyond. Select a country in the header to see country-specific services and regulatory information."
+              eyebrow="Multi-city coverage"
+              title="Serving businesses across Zimbabwe"
+              description="From our base in Bulawayo, we provide business consultancy and support services across multiple cities in Zimbabwe, including Bulawayo, Harare, Gwanda, Hwange, Lupane, Victoria Falls, Masvingo, Mutare, Kwekwe, Chitungwiza, Marondera and Kadoma. Most services can also be delivered remotely or online — you don't need to visit our office."
             />
             <ul className="mt-8 flex flex-wrap gap-2">
               {companyInfo.coverage.map((c) => (
                 <li key={c} className="rounded border border-border bg-card px-3 py-1.5 text-sm">{c}</li>
               ))}
             </ul>
-            <Link to="/services" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
-              Explore our services <ArrowRight className="h-4 w-4" />
+            <Link to="/contact" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+              Contact us <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
           <CoverageMap className="aspect-[4/3]" />
@@ -164,7 +161,7 @@ export default function Home() {
         <div className="mx-auto max-w-3xl px-6 py-20">
           <SectionHeading align="center" eyebrow="FAQ" title="Frequently asked questions" />
           <div className="mt-10">
-            <FAQAccordion items={generalFaqs.slice(0, 5)} />
+            <FAQAccordion items={[...generalFaqs, ...(countryFaqs.ZW || [])].slice(0, 6)} />
           </div>
           <div className="mt-8 text-center">
             <Link to="/faq" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">

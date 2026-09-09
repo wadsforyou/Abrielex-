@@ -3,23 +3,24 @@ import { useSearchParams } from "react-router-dom";
 import { Phone, Mail, MapPin, MessageCircle, Facebook, Loader2, CheckCircle2, Clock } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
 import CoverageMap from "@/components/CoverageMap";
-import { useCountry } from "@/lib/CountryContext";
-import { getCountryServiceTitle, companyInfo, whatsappLink, telLink, mailLink } from "@/lib/siteData";
+import { companyInfo, whatsappLink, telLink, mailLink, serviceCategories } from "@/lib/siteData";
 import { base44 } from "@/api/base44Client";
 import { notifyAdmin } from "@/lib/notifyAdmin";
 
 export default function Contact() {
-  const { country, location } = useCountry();
   const [params] = useSearchParams();
   const serviceSlug = params.get("service") || "";
-  const serviceTitle = useMemo(() => (serviceSlug ? getCountryServiceTitle(country.code, serviceSlug) : ""), [country.code, serviceSlug]);
+  const serviceTitle = useMemo(
+    () => (serviceSlug ? serviceCategories.find((s) => s.slug === serviceSlug)?.title || "" : ""),
+    [serviceSlug]
+  );
 
   const [form, setForm] = useState({
     name: "",
     email: "",
     phone: "",
     subject: serviceTitle ? `Enquiry about ${serviceTitle}` : "",
-    message: serviceTitle ? `I'm interested in ${serviceTitle} (${country.name}). Please contact me.` : "",
+    message: serviceTitle ? `I'm interested in ${serviceTitle}. Please contact me.` : "",
   });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -36,15 +37,15 @@ export default function Contact() {
     try {
       await base44.entities.ContactMessage.create({
         ...form,
-        country: country.name,
-        state: location.state || "",
-        city: location.city || "",
+        country: "Zimbabwe",
+        state: "",
+        city: "",
         service_category: serviceTitle || "",
       });
       await notifyAdmin("contact_message", {
         client_name: form.name,
-        country: country.name,
-        location: [location.state, location.city].filter(Boolean).join(", ") || "—",
+        country: "Zimbabwe",
+        location: "—",
         service_category: serviceTitle || "—",
         subject: form.subject || "—",
         email: form.email,
@@ -153,7 +154,7 @@ export default function Contact() {
             {serviceTitle && (
               <div className="mt-6 rounded-md border border-primary/20 bg-primary/5 px-4 py-3 text-sm">
                 <span className="font-semibold text-primary">Service context: </span>
-                <span className="text-muted-foreground">{country.name} · {serviceTitle}</span>
+                <span className="text-muted-foreground">{serviceTitle}</span>
               </div>
             )}
             {submitted ? (

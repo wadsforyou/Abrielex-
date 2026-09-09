@@ -14,7 +14,7 @@ export default function AdminSettings() {
       const list = await base44.entities.NotificationSetting.list("-created_date", 50);
       let rec = list.find((r) => r.key === "global") || list[0];
       if (!rec) {
-        rec = await base44.entities.NotificationSetting.create({ key: "global", email_enabled: true, whatsapp_enabled: false, inapp_enabled: true, sender_name: "Abrielex Business Consultancy", whatsapp_configured: false, reminder_levels: "30,14,7,1", admin_notify_email: "abrielexconsultancy@gmail.com" });
+        rec = await base44.entities.NotificationSetting.create({ key: "global", email_enabled: true, whatsapp_enabled: false, inapp_enabled: true, sender_name: "Abrielex Business Consultancy", whatsapp_configured: false, reminder_levels: "30,14,7,1",         admin_notify_email: "wads.foryou@gmail.com" });
       }
       setS(rec);
     } catch {} finally { setLoading(false); }

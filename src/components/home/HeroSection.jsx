@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { serviceCategories, companyInfo } from "@/lib/siteData";
-import { useCountry } from "@/lib/CountryContext";
-import { getCountryServices } from "@/lib/siteData";
 import { Image } from "@/components/ui/image";
 import { cn } from "@/lib/utils";
 
@@ -11,8 +9,6 @@ const HERO_IMG = "https://media.base44.com/images/public/6a9fbe96952aa2db4053eb1
 
 export default function HeroSection() {
   const [active, setActive] = useState(0);
-  const { country } = useCountry();
-  const countryServices = getCountryServices(country.code);
 
   return (
     <section className="relative overflow-hidden border-b border-border bg-card">
@@ -51,7 +47,7 @@ export default function HeroSection() {
           <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
             Abrielex Business Consultancy delivers professional company secretarial, tax,
             procurement, bookkeeping and general business services — in person and online across
-            multiple countries. {companyInfo.tagline}.
+            multiple cities in Zimbabwe. {companyInfo.tagline}.
           </p>
 
           <div className="mt-9 flex flex-wrap gap-3">
@@ -65,8 +61,8 @@ export default function HeroSection() {
 
           <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 text-xs text-muted-foreground">
             <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> Remote / online services</span>
-            <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> Multi-country coverage</span>
-            <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> {country.flag} {country.name}</span>
+            <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> Multi-city coverage</span>
+            <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> Based in Bulawayo, Zimbabwe</span>
           </div>
         </div>
 
@@ -74,10 +70,10 @@ export default function HeroSection() {
         <div className="relative lg:pl-8">
           <div className="border border-border bg-card/80 backdrop-blur">
             <div className="border-b border-border bg-foreground px-5 py-3 text-xs font-semibold uppercase tracking-wider text-white/80">
-              Service Ledger — {country.name}
+              Service Ledger — Zimbabwe
             </div>
             <ul>
-              {countryServices.map((s, i) => (
+              {serviceCategories.map((s, i) => (
                 <li key={s.slug}>
                   <Link
                     to={`/services/${s.slug}`}

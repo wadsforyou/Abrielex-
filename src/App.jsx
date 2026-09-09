@@ -35,8 +35,6 @@ import AdminNotifications from "./pages/admin/AdminNotifications";
 import AdminQuotes from "./pages/admin/AdminQuotes";
 import AdminConsultations from "./pages/admin/AdminConsultations";
 import AdminServices from "./pages/admin/AdminServices";
-import AdminCountries from "./pages/admin/AdminCountries";
-import AdminLocations from "./pages/admin/AdminLocations";
 import AdminResources from "./pages/admin/AdminResources";
 import AdminFAQs from "./pages/admin/AdminFAQs";
 import AdminContent from "./pages/admin/AdminContent";
@@ -81,8 +79,6 @@ function App() {
                   <Route path="/admin/quotes" element={<AdminQuotes />} />
                   <Route path="/admin/consultations" element={<AdminConsultations />} />
                   <Route path="/admin/services" element={<AdminServices />} />
-                  <Route path="/admin/countries" element={<AdminCountries />} />
-                  <Route path="/admin/locations" element={<AdminLocations />} />
                   <Route path="/admin/resources" element={<AdminResources />} />
                   <Route path="/admin/faqs" element={<AdminFAQs />} />
                   <Route path="/admin/content" element={<AdminContent />} />

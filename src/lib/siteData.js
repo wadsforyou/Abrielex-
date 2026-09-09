@@ -31,8 +31,16 @@ export const companyInfo = {
     "Lupane",
     "Victoria Falls",
     "Masvingo",
+    "Mutare",
+    "Kwekwe",
+    "Chitungwiza",
+    "Marondera",
+    "Kadoma",
   ],
-  regions: ["Matabeleland North", "Matabeleland South", "Midlands", "Masvingo", "Mashonaland"],
+  regions: [
+    "Bulawayo", "Harare", "Matabeleland North", "Matabeleland South",
+    "Midlands", "Masvingo", "Manicaland", "Mashonaland East", "Mashonaland West",
+  ],
   remoteServices: true,
 };
 
@@ -59,88 +67,13 @@ export const countries = [
     },
     states: [
       { name: "Bulawayo", cities: ["Bulawayo CBD", "Burnside", "Hillside", "Suburbs", "Belmont"] },
-      { name: "Harare", cities: ["Harare CBD", "Borrowdale", "Avondale", "Mt Pleasant", "Belvedere"] },
+      { name: "Harare", cities: ["Harare CBD", "Borrowdale", "Avondale", "Mt Pleasant", "Belvedere", "Chitungwiza"] },
       { name: "Matabeleland North", cities: ["Lupane", "Hwange", "Victoria Falls", "Tsholotsho"] },
       { name: "Matabeleland South", cities: ["Gwanda", "Beitbridge", "Plumtree"] },
-      { name: "Midlands", cities: ["Gweru", "Kwekwe", "Zvishavane"] },
+      { name: "Midlands", cities: ["Gweru", "Kwekwe", "Zvishavane", "Kadoma"] },
       { name: "Masvingo", cities: ["Masvingo", "Chiredzi", "Triangle"] },
-    ],
-  },
-  {
-    code: "ZA",
-    name: "South Africa",
-    currency: "ZAR",
-    confirmed: false,
-    flag: "🇿🇦",
-    regulatoryBodies: {
-      tax: "SARS — South African Revenue Service (to be confirmed)",
-      companies: "CIPC — Companies and Intellectual Property Commission (to be confirmed)",
-      procurement: "National Treasury eTenders (to be confirmed)",
-      local: "Local Municipality (to be confirmed)",
-      liquor: "Provincial Liquor Board (to be confirmed)",
-    },
-    states: [
-      { name: "Gauteng", cities: ["Johannesburg", "Pretoria", "Sandton"] },
-      { name: "Western Cape", cities: ["Cape Town", "Stellenbosch"] },
-      { name: "KwaZulu-Natal", cities: ["Durban", "Pietermaritzburg"] },
-    ],
-  },
-  {
-    code: "ZM",
-    name: "Zambia",
-    currency: "ZMW",
-    confirmed: false,
-    flag: "🇿🇲",
-    regulatoryBodies: {
-      tax: "ZRA — Zambia Revenue Authority (to be confirmed)",
-      companies: "PACRA — Patents and Companies Registration Agency (to be confirmed)",
-      procurement: "ZPPA — Zambia Public Procurement Authority (to be confirmed)",
-      local: "Local Municipality (to be confirmed)",
-      liquor: "Provincial Liquor Authority (to be confirmed)",
-    },
-    states: [
-      { name: "Lusaka", cities: ["Lusaka", "Kafue"] },
-      { name: "Copperbelt", cities: ["Ndola", "Kitwe"] },
-      { name: "Southern", cities: ["Livingstone", "Choma"] },
-    ],
-  },
-  {
-    code: "MZ",
-    name: "Mozambique",
-    currency: "MZN",
-    confirmed: false,
-    flag: "🇲🇿",
-    regulatoryBodies: {
-      tax: "AT — Autoridade Tributária (to be confirmed)",
-      companies: "Conservatória do Registo Comercial (to be confirmed)",
-      procurement: "Mozambique Public Procurement (to be confirmed)",
-      local: "Local Municipality (to be confirmed)",
-      liquor: "Provincial Authority (to be confirmed)",
-    },
-    states: [
-      { name: "Maputo", cities: ["Maputo", "Matola"] },
-      { name: "Sofala", cities: ["Beira"] },
-      { name: "Nampula", cities: ["Nampula"] },
-    ],
-  },
-  {
-    code: "AU",
-    name: "Australia",
-    currency: "AUD",
-    confirmed: false,
-    flag: "🇦🇺",
-    regulatoryBodies: {
-      tax: "ATO — Australian Taxation Office (to be confirmed)",
-      companies: "ASIC — Australian Securities & Investments Commission (to be confirmed)",
-      procurement: "State Procurement Boards (to be confirmed)",
-      local: "Local Council (to be confirmed)",
-      liquor: "State Liquor Authority (to be confirmed)",
-    },
-    states: [
-      { name: "New South Wales", cities: ["Sydney", "Newcastle"] },
-      { name: "Victoria", cities: ["Melbourne", "Geelong"] },
-      { name: "Queensland", cities: ["Brisbane", "Gold Coast"] },
-      { name: "Western Australia", cities: ["Perth"] },
+      { name: "Manicaland", cities: ["Mutare", "Nyanga"] },
+      { name: "Mashonaland East", cities: ["Marondera", "Murewa"] },
     ],
   },
 ];
@@ -194,45 +127,16 @@ export const countryServiceCategories = {
     { slug: "bookkeeping-financial", title: "Bookkeeping & Financial Services", short: "Accounting, reporting, auditing, reconciliations & financial planning." },
     { slug: "general-services", title: "General Services", short: "Liquor & shop licenses, agreements, labour relations & more." },
   ],
-  ZA: [
-    { slug: "company-secretarial", title: "CIPC Company Services", short: "CIPC company registrations, director changes, annual returns & amendments." },
-    { slug: "zimra-tax-customs", title: "SARS Tax & Customs Services", short: "SARS tax registration, returns, eFiling, assessments & customs." },
-    { slug: "praz-vendor-numbers", title: "Supplier & Tender Services", short: "Supplier registration, tender bidding & account management." },
-    { slug: "bookkeeping-financial", title: "Bookkeeping & Financial Services", short: "Accounting, reporting, reconciliations & financial planning." },
-    { slug: "general-services", title: "General Services", short: "Business licensing, agreements, labour relations & more." },
-  ],
-  ZM: [
-    { slug: "company-secretarial", title: "PACRA Company Services", short: "PACRA company registrations, changes, annual returns & document retrieval." },
-    { slug: "zimra-tax-customs", title: "ZRA Tax & Customs Services", short: "ZRA tax registration, returns, assessments & customs clearance." },
-    { slug: "praz-vendor-numbers", title: "Supplier & Tender Services", short: "ZPPA supplier registration, tender bidding & vendor management." },
-    { slug: "bookkeeping-financial", title: "Bookkeeping & Financial Services", short: "Accounting, reporting, reconciliations & financial planning." },
-    { slug: "general-services", title: "General Services", short: "Business licensing, agreements, labour relations & more." },
-  ],
-  MZ: [
-    { slug: "company-secretarial", title: "Business Registration Services", short: "Commercial registry registration, amendments & document retrieval." },
-    { slug: "zimra-tax-customs", title: "Autoridade Tributária de Moçambique (AT) Tax & Customs", short: "AT tax registration, returns, assessments & customs clearance." },
-    { slug: "praz-vendor-numbers", title: "Supplier/Tender & Business Licensing Services", short: "Public procurement registration, tender bidding & business licensing." },
-    { slug: "bookkeeping-financial", title: "Bookkeeping & Financial Services", short: "Accounting, reporting, reconciliations & financial planning." },
-    { slug: "general-services", title: "General Services", short: "Agreements, labour relations & general business support." },
-  ],
-  AU: [
-    { slug: "company-secretarial", title: "ASIC Company Services", short: "ASIC company registration, director changes, annual reviews & amendments." },
-    { slug: "zimra-tax-customs", title: "ATO Tax Services", short: "ATO tax registration, BAS, returns, assessments & tax advice." },
-    { slug: "praz-vendor-numbers", title: "Customs / Import & Export Services", short: "ABN/ACN, customs registration, import/export compliance & supplier setup." },
-    { slug: "bookkeeping-financial", title: "Bookkeeping & Financial Services", short: "Accounting, reporting, reconciliations & financial planning." },
-    { slug: "general-services", title: "General Services", short: "Business licensing, agreements, labour relations & more." },
-  ],
 };
 
-// Resolve the service categories for a country code (falls back to Zimbabwe).
-export function getCountryServices(code) {
-  return countryServiceCategories[code] || countryServiceCategories.ZW;
+// Single fixed service catalogue (Zimbabwe).
+export function getCountryServices() {
+  return serviceCategories;
 }
 
-// Resolve a single country-specific service title by slug.
+// Resolve a service title by slug (single catalogue).
 export function getCountryServiceTitle(code, slug) {
-  const list = getCountryServices(code);
-  return list.find((s) => s.slug === slug)?.title || serviceCategories.find((s) => s.slug === slug)?.title || slug;
+  return serviceCategories.find((s) => s.slug === slug)?.title || slug;
 }
 
 // Full detail per category
@@ -553,7 +457,7 @@ export const generalFaqs = [
   },
   {
     q: "Which areas do you cover?",
-    a: "We cover Bulawayo, Harare, Gwanda, Hwange, Lupane, Victoria Falls, Masvingo and surrounding regions, with remote services available across Zimbabwe, South Africa, Zambia, Mozambique and Australia.",
+    a: "We provide business consultancy and support services across multiple cities in Zimbabwe, including Bulawayo, Harare, Gwanda, Hwange, Lupane, Victoria Falls, Masvingo, Mutare, Kwekwe, Chitungwiza, Marondera and Kadoma. Most services can also be delivered remotely or online.",
   },
   {
     q: "Do you offer remote or online services?",
@@ -585,18 +489,7 @@ export const countryFaqs = {
   ZW: [
     { q: "What is PRAZ and do I need it?", a: "PRAZ is the Procurement Regulatory Authority of Zimbabwe. You need PRAZ registration to bid for public-sector tenders in Zimbabwe." },
     { q: "What is ZIMRA tax clearance?", a: "A tax clearance certificate from ZIMRA confirms your tax affairs are up to date and is often required for tenders and banking." },
-  ],
-  ZA: [
-    { q: "Which body handles company registration in South Africa?", a: "Company registration is handled by CIPC (Companies and Intellectual Property Commission). This information is to be confirmed." },
-  ],
-  ZM: [
-    { q: "Which body handles company registration in Zambia?", a: "Company registration is handled by PACRA (Patents and Companies Registration Agency). This information is to be confirmed." },
-  ],
-  MZ: [
-    { q: "Which body handles tax in Mozambique?", a: "Tax matters are handled by the Autoridade Tributária (AT). This information is to be confirmed." },
-  ],
-  AU: [
-    { q: "Which body handles company registration in Australia?", a: "Company registration is handled by ASIC (Australian Securities & Investments Commission). This information is to be confirmed." },
+    { q: "Which cities do you serve in Zimbabwe?", a: "We serve clients across Bulawayo, Harare, Gwanda, Hwange, Lupane, Victoria Falls, Masvingo, Mutare, Kwekwe, Chitungwiza, Marondera and Kadoma, with remote and online services available wherever you are." },
   ],
 };
 
@@ -741,18 +634,18 @@ export const resources = [
 // COVERAGE — for the coverage map (Zimbabwe-focused with international presence)
 // ---------------------------------------------------------------------------
 export const coveragePoints = [
-  { city: "Bulawayo", country: "Zimbabwe", primary: true, x: 32, y: 58 },
-  { city: "Harare", country: "Zimbabwe", primary: true, x: 55, y: 40 },
-  { city: "Gwanda", country: "Zimbabwe", x: 30, y: 66 },
-  { city: "Hwange", country: "Zimbabwe", x: 24, y: 50 },
-  { city: "Lupane", country: "Zimbabwe", x: 30, y: 50 },
-  { city: "Victoria Falls", country: "Zimbabwe", x: 18, y: 44 },
-  { city: "Masvingo", country: "Zimbabwe", x: 52, y: 62 },
-  { city: "Gweru", country: "Zimbabwe", x: 48, y: 50 },
-  { city: "Johannesburg", country: "South Africa", x: 33, y: 84 },
-  { city: "Lusaka", country: "Zambia", x: 50, y: 30 },
-  { city: "Maputo", country: "Mozambique", x: 62, y: 78 },
-  { city: "Sydney", country: "Australia", x: 88, y: 88 },
+  { city: "Bulawayo", lat: -20.15, lng: 28.58, primary: true },
+  { city: "Harare", lat: -17.83, lng: 31.05, primary: true },
+  { city: "Gwanda", lat: -20.93, lng: 29.08 },
+  { city: "Hwange", lat: -18.37, lng: 26.66 },
+  { city: "Lupane", lat: -18.9, lng: 27.76 },
+  { city: "Victoria Falls", lat: -17.93, lng: 25.83 },
+  { city: "Masvingo", lat: -20.07, lng: 30.83 },
+  { city: "Mutare", lat: -18.97, lng: 32.57 },
+  { city: "Kwekwe", lat: -18.92, lng: 29.82 },
+  { city: "Chitungwiza", lat: -18.01, lng: 31.1 },
+  { city: "Marondera", lat: -18.19, lng: 31.55 },
+  { city: "Kadoma", lat: -18.33, lng: 29.92 },
 ];
 
 // ---------------------------------------------------------------------------

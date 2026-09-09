@@ -1,42 +1,23 @@
-import React, { createContext, useContext, useState, useMemo } from "react";
+import React, { createContext, useContext, useMemo } from "react";
 import { countries } from "./siteData";
 
+// Abrielex is a Zimbabwe-based consultancy. The country is fixed (Zimbabwe)
+// and is no longer interactive. This context remains so existing components
+// that read `country` keep working without per-component refactors.
 const CountryContext = createContext(null);
 
-const STORAGE_KEY = "abrielex_country";
-
 export function CountryProvider({ children }) {
-  const [countryCode, setCountryCode] = useState(() => {
-    if (typeof window !== "undefined") {
-      return window.localStorage.getItem(STORAGE_KEY) || "ZW";
-    }
-    return "ZW";
-  });
-  const [location, setLocation] = useState({ state: "", city: "" });
-
-  const country = useMemo(
-    () => countries.find((c) => c.code === countryCode) || countries[0],
-    [countryCode]
-  );
-
-  const setCountry = (code) => {
-    setCountryCode(code);
-    setLocation({ state: "", city: "" });
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(STORAGE_KEY, code);
-    }
-  };
+  const country = useMemo(() => countries[0], []);
 
   const value = useMemo(
     () => ({
       country,
-      countryCode,
-      setCountry,
-      location,
-      setLocation,
-      isConfirmed: country.confirmed,
+      countryCode: country.code,
+      location: { state: "", city: "" },
+      setLocation: () => {},
+      isConfirmed: true,
     }),
-    [country, countryCode, location]
+    [country]
   );
 
   return <CountryContext.Provider value={value}>{children}</CountryContext.Provider>;

@@ -18,8 +18,8 @@ export default function Footer() {
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           {/* brand */}
           <div>
-            <div className="mb-5">
-              <Logo variant="light" className="h-[84px]" />
+            <div className="mb-5 inline-block rounded-md bg-white px-3 py-2">
+              <Logo className="h-[60px]" />
             </div>
             <p className="font-serif-display text-lg italic text-white">{companyInfo.tagline}.</p>
             <p className="mt-4 text-sm leading-relaxed text-white/60">
@@ -80,7 +80,7 @@ export default function Footer() {
               <li className="flex gap-2.5"><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><span>{companyInfo.office.line1}, {companyInfo.office.line2}, {companyInfo.office.city}</span></li>
             </ul>
             <div className="mt-5 rounded-md border border-white/10 bg-white/5 p-3 text-xs text-white/50">
-              Coverage: Zimbabwe, South Africa, Zambia, Mozambique, Australia
+              Multi-city coverage across Zimbabwe: Bulawayo, Harare, Gwanda, Hwange, Lupane, Victoria Falls, Masvingo, Mutare, Kwekwe, Chitungwiza, Marondera and Kadoma.
             </div>
           </div>
         </div>
