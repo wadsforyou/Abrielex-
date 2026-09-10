@@ -30,9 +30,7 @@ export default function GetAQuote() {
             <span className="h-px w-8 bg-primary" />
           </div>
           <h1 className="font-serif-display text-4xl font-bold sm:text-5xl text-balance">{text("title", "Get a Quote / Book a Consultation")}</h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground">
-            {text("intro", "Choose how you'd like to engage us. Request a tailored quote for a specific service, or book a professional consultation — in person, by phone, WhatsApp or online.")}
-          </p>
+          <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground">{text("intro", "Tell us about the service you require and provide a few details about your business or organization. We will review your enquiry and provide appropriate guidance regarding your requirements. You can also arrange a consultation to discuss your business requirements, challenges or planned activities with Abrielex Business Consultancy.")}</p>
         </div>
       </section>
 
@@ -43,14 +41,14 @@ export default function GetAQuote() {
               <ChoiceCard
                 icon={<FileSpreadsheet className="h-8 w-8" />}
                 title="Get a Quote"
-                desc="Tell us about your requirement and we'll prepare a tailored quote. No online payment — fees are discussed and arranged with the agency."
+                desc="Tell us about the service you require and provide a few details about your business or organization. We will review your enquiry and provide appropriate guidance regarding your requirements."
                 cta="Get a Quote"
                 onClick={() => setMode("quote")}
               />
               <ChoiceCard
                 icon={<Calendar className="h-8 w-8" />}
                 title="Book a Consultation"
-                desc="Schedule a professional consultation — in person, by phone, WhatsApp or online. Pick a date and time that suits you."
+                desc="Arrange a consultation to discuss your business requirements, challenges or planned activities with Abrielex Business Consultancy."
                 cta="Book a Consultation"
                 onClick={() => setMode("consultation")}
               />
@@ -170,7 +168,7 @@ function QuoteForm({ countryServices, preselectedCategory, preselectedSpecific }
       });
       setSubmitted(true);
       window.scrollTo(0, 0);
-    } catch {
+    } catch (err) {
       setError("Something went wrong submitting your request. Please try again or contact us directly.");
     } finally {
       setSubmitting(false);

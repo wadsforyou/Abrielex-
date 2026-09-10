@@ -79,9 +79,7 @@ export default function Contact() {
             <span className="h-px w-8 bg-primary" />
           </div>
           <h1 className="font-serif-display text-4xl font-bold sm:text-5xl md:text-6xl text-balance">Contact us</h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground">
-            {text("intro", "Reach us by phone, WhatsApp, email, or visit our office in Bulawayo. We respond to all enquiries promptly.")}
-          </p>
+          <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground">{text("intro", "Reach us by phone, WhatsApp, email, or visit our office in Bulawayo. We respond to all enquiries promptly.")}</p>
         </div>
       </section>
 

@@ -1,4 +1,72 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+
 const permissionFor = { StaffProfile: "users", User: "users", RolePermission: "roles", SiteContent: "content", SeoPage: "seo", IntegrationSetting: "integrations", AuditLog: "audit", Service: "services", Resource: "resources", FAQItem: "faqs", NotificationTemplate: "templates", NotificationSetting: "settings", ContactMessage: "messages", Quote: "quotes", QuoteRequest: "quotes", ConsultationBooking: "consultations", Testimonial: "content", CareerOpening: "content", Company: "companies", ServiceCase: "cases", CaseUpdate: "cases", PortalDocument: "documents", PortalTask: "tasks", Deadline: "deadlines", ComplianceItem: "renewals", PortalNotification: "notifications", PortalMessage: "messages" };
-async function getContext(base44, actor) { const profiles = await base44.asServiceRole.entities.StaffProfile.list("-created_date", 500); const profile = profiles.find((item) => item.user_id === actor.id); if (!profile || profile.active === false) return { profiles, profile: null, owner: false, permissions: [] }; if (profile.is_owner || profile.staff_role === "super_admin") return { profiles, profile, owner: true, permissions: ["*"] }; const roles = await base44.asServiceRole.entities.RolePermission.list("-created_date", 500); const role = roles.find((item) => item.role === profile.staff_role); return { profiles, profile, owner: false, permissions: String(role?.permissions || role?.sections || "").split(",").map((item) => item.trim()).filter(Boolean) }; }
-export default async function(req) { try { const base44 = createClientFromRequest(req); const actor = await base44.auth.me(); if (!actor || actor.role !== "admin") return Response.json({ error: "Admin access required" }, { status: 403 }); const context = await getContext(base44, actor); const body = await req.json(); const can = (permission) => context.owner || context.permissions.includes("*") || context.permissions.includes(permission) || context.permissions.includes("manage_settings"); if (body.action === "entity_read") { const permission = permissionFor[body.entity]; if (!permission || !can(permission)) return Response.json({ error: "Permission required" }, { status: 403 }); const entity = base44.asServiceRole.entities[body.entity]; const result = body.operation === "filter" ? await entity.filter(body.filters || {}, body.sort || "-created_date", body.limit || 500) : await entity.list(body.sort || "-created_date", body.limit || 500); return Response.json({ ok: true, result }); } if (body.action === "invite_user") { if (!can("users")) return Response.json({ error: "User management permission required" }, { status: 403 }); if (!body.email) return Response.json({ error: "Email is required" }, { status: 400 }); const invited = await base44.auth.inviteUser(body.email, body.role === "admin" ? "admin" : "user"); await base44.asServiceRole.entities.AuditLog.create({ actor_id: actor.id, actor_name: actor.email, action: "user_invited", target_type: "User", details: `Invited ${body.email}` }); return Response.json({ ok: true, invited }); } if (body.action === "transfer_ownership") { if (!context.profile?.is_owner) return Response.json({ error: "Only the current owner can transfer ownership" }, { status: 403 }); const target = context.profiles.find((profile) => profile.user_id === body.targetUserId); if (!target || target.user_id === actor.id) return Response.json({ error: "A different existing admin profile is required" }, { status: 400 }); await base44.asServiceRole.entities.StaffProfile.update(context.profile.id, { is_owner: false, staff_role: "administrator", active: body.removeAccess ? false : true }); await base44.asServiceRole.entities.StaffProfile.update(target.id, { is_owner: true, active: true, staff_role: "administrator" }); await base44.asServiceRole.entities.AuditLog.create({ actor_id: actor.id, actor_name: actor.email, action: "ownership_transferred", target_type: "StaffProfile", target_id: target.user_id, details: `Ownership transferred from ${actor.id} to ${target.user_id}; previous access removed: ${!!body.removeAccess}` }); return Response.json({ ok: true, previousOwnerId: actor.id, newOwnerId: target.user_id }); } if (body.action === "entity_mutation") { const permission = permissionFor[body.entity]; if (!permission || !can(permission)) return Response.json({ error: "Permission required" }, { status: 403 }); if (body.entity === "StaffProfile" && body.data?.is_owner && !context.owner) return Response.json({ error: "Only the owner can grant ownership" }, { status: 403 }); const entity = base44.asServiceRole.entities[body.entity]; let result; if (body.mutation === "create") result = await entity.create(body.data || {}); else if (body.mutation === "update") result = await entity.update(body.id, body.data || {}); else if (body.mutation === "delete") result = await entity.delete(body.id); else return Response.json({ error: "Unsupported mutation" }, { status: 400 }); if (body.entity !== "AuditLog") await base44.asServiceRole.entities.AuditLog.create({ actor_id: actor.id, actor_name: actor.email, action: `${body.entity.toLowerCase()}_${body.mutation}`, target_type: body.entity, target_id: body.id || result?.id || "", details: body.auditDetails || "Admin mutation" }); return Response.json({ ok: true, result }); } return Response.json({ error: "Unsupported action" }, { status: 400 }); } catch (error) { return Response.json({ error: error.message || "Admin control failed" }, { status: 500 }); } }
+
+async function getContext(base44, actor) {
+  const profiles = await base44.asServiceRole.entities.StaffProfile.list("-created_date", 500);
+  const profile = profiles.find((item) => item.user_id === actor.id);
+  if (!profile || profile.active === false) return { profiles, profile: null, owner: false, permissions: [] };
+  if (profile.is_owner || profile.staff_role === "super_admin") return { profiles, profile, owner: true, permissions: ["*"] };
+  const roles = await base44.asServiceRole.entities.RolePermission.list("-created_date", 500);
+  const role = roles.find((item) => item.role === profile.staff_role);
+  return { profiles, profile, owner: false, permissions: String(role?.permissions || role?.sections || "").split(",").map((item) => item.trim()).filter(Boolean) };
+}
+
+export default async function(req) {
+  try {
+    const base44 = createClientFromRequest(req);
+    const actor = await base44.auth.me();
+    if (!actor || actor.role !== "admin") return Response.json({ error: "Admin access required" }, { status: 403 });
+    const context = await getContext(base44, actor);
+    const body = await req.json();
+    const can = (permission) => context.owner || context.permissions.includes("*") || context.permissions.includes(permission) || context.permissions.includes("manage_settings");
+
+    if (body.action === "entity_read") {
+      const permission = permissionFor[body.entity];
+      if (!permission) return Response.json({ error: "Entity read is not permitted" }, { status: 400 });
+      if (!can(permission)) return Response.json({ error: `Permission required: ${permission}` }, { status: 403 });
+      const entity = base44.asServiceRole.entities[body.entity];
+      const result = body.operation === "filter"
+        ? await entity.filter(body.filters || {}, body.sort || "-created_date", body.limit || 500)
+        : await entity.list(body.sort || "-created_date", body.limit || 500);
+      return Response.json({ ok: true, result });
+    }
+
+    if (body.action === "invite_user") {
+      if (!can("users")) return Response.json({ error: "User management permission required" }, { status: 403 });
+      if (!body.email) return Response.json({ error: "Email is required" }, { status: 400 });
+      const invited = await base44.auth.inviteUser(body.email, body.role === "admin" ? "admin" : "user");
+      await base44.asServiceRole.entities.AuditLog.create({ actor_id: actor.id, actor_name: actor.email, action: "user_invited", target_type: "User", details: `Invited ${body.email}` });
+      return Response.json({ ok: true, invited });
+    }
+
+    if (body.action === "transfer_ownership") {
+      if (!context.profile?.is_owner) return Response.json({ error: "Only the current owner can transfer ownership" }, { status: 403 });
+      const target = context.profiles.find((profile) => profile.user_id === body.targetUserId);
+      if (!target || target.user_id === actor.id) return Response.json({ error: "A different existing admin profile is required" }, { status: 400 });
+      await base44.asServiceRole.entities.StaffProfile.update(context.profile.id, { is_owner: false, staff_role: "administrator", active: body.removeAccess ? false : true });
+      await base44.asServiceRole.entities.StaffProfile.update(target.id, { is_owner: true, active: true, staff_role: "administrator" });
+      await base44.asServiceRole.entities.AuditLog.create({ actor_id: actor.id, actor_name: actor.email, action: "ownership_transferred", target_type: "StaffProfile", target_id: target.user_id, details: `Ownership transferred from ${actor.id} to ${target.user_id}` });
+      return Response.json({ ok: true, previousOwnerId: actor.id, newOwnerId: target.user_id });
+    }
+
+    if (body.action === "entity_mutation") {
+      const permission = permissionFor[body.entity];
+      if (!permission) return Response.json({ error: "Entity mutation is not permitted" }, { status: 400 });
+      if (!can(permission)) return Response.json({ error: `Permission required: ${permission}` }, { status: 403 });
+      if (body.entity === "StaffProfile" && body.data?.is_owner && !context.owner) return Response.json({ error: "Only the owner can grant ownership" }, { status: 403 });
+      const entity = base44.asServiceRole.entities[body.entity];
+      let result;
+      if (body.mutation === "create") result = await entity.create(body.data || {});
+      else if (body.mutation === "update") result = await entity.update(body.id, body.data || {});
+      else if (body.mutation === "delete") result = await entity.delete(body.id);
+      else return Response.json({ error: "Unsupported mutation" }, { status: 400 });
+      if (body.entity !== "AuditLog") await base44.asServiceRole.entities.AuditLog.create({ actor_id: actor.id, actor_name: actor.email, action: `${body.entity.toLowerCase()}_${body.mutation}`, target_type: body.entity, target_id: body.id || result?.id || "", details: body.auditDetails || "Admin mutation" });
+      return Response.json({ ok: true, result });
+    }
+
+    return Response.json({ error: "Unsupported action" }, { status: 400 });
+  } catch (error) {
+    return Response.json({ error: error.message || "Admin control failed" }, { status: 500 });
+  }
+}
