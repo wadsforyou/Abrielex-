@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Save, Loader2, Mail, MessageCircle, Bell } from "lucide-react";
 import { PageHeader, Card, Loader, inputClass } from "@/components/portal/ui";
+import { adminList } from "@/lib/adminData";
 
 export default function AdminSettings() {
   const [s, setS] = useState(null);
@@ -11,10 +12,11 @@ export default function AdminSettings() {
 
   useEffect(() => { (async () => {
     try {
-      const list = await base44.entities.NotificationSetting.list("-created_date", 50);
+      const list = await adminList("NotificationSetting", "-created_date", 50);
       let rec = list.find((r) => r.key === "global") || list[0];
       if (!rec) {
-        rec = await base44.entities.NotificationSetting.create({ key: "global", email_enabled: true, whatsapp_enabled: false, inapp_enabled: true, sender_name: "Abrielex Business Consultancy", whatsapp_configured: false, reminder_levels: "30,14,7,1",         admin_notify_email: "wads.foryou@gmail.com" });
+        const created = await base44.functions.invoke("adminControl", { action: "entity_mutation", entity: "NotificationSetting", mutation: "create", data: { key: "global", email_enabled: true, whatsapp_enabled: false, inapp_enabled: true, sender_name: "Abrielex Business Consultancy", whatsapp_configured: false, reminder_levels: "30,14,7,1", admin_notify_email: "wads.foryou@gmail.com" }, auditDetails: "Global notification settings created" });
+        rec = created.result;
       }
       setS(rec);
     } catch {} finally { setLoading(false); }
@@ -22,7 +24,7 @@ export default function AdminSettings() {
 
   async function save() {
     setSaving(true);
-    try { await base44.entities.NotificationSetting.update(s.id, s); setSaved(true); setTimeout(() => setSaved(false), 2500); }
+    try { await base44.functions.invoke("adminControl", { action: "entity_mutation", entity: "NotificationSetting", mutation: "update", id: s.id, data: s, auditDetails: "Global notification settings updated" }); setSaved(true); setTimeout(() => setSaved(false), 2500); }
     catch (e) { alert("Failed: " + (e.message || "")); } finally { setSaving(false); }
   }
 

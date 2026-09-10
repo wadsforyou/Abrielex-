@@ -4,8 +4,10 @@ import { ArrowRight } from "lucide-react";
 import FAQAccordion from "@/components/FAQAccordion";
 import CTASection from "@/components/CTASection";
 import { generalFaqs, countryFaqs } from "@/lib/siteData";
+import { useSiteContent } from "@/hooks/use-site-content";
 
 export default function FAQ() {
+  const text = useSiteContent("faq");
   const items = [...generalFaqs, ...(countryFaqs.ZW || [])];
 
   return (
@@ -19,7 +21,7 @@ export default function FAQ() {
           </div>
           <h1 className="font-serif-display text-4xl font-bold sm:text-5xl md:text-6xl text-balance">Frequently asked questions</h1>
           <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground">
-            Answers to common questions about our services and how we work.
+            {text("intro", "Answers to common questions about our services and how we work.")}
           </p>
         </div>
       </section>

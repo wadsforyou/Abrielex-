@@ -1,0 +1,24 @@
+{
+  "name": "SeoPage",
+  "type": "object",
+  "properties": {
+    "path": { "type": "string" },
+    "page_title": { "type": "string" },
+    "seo_title": { "type": "string" },
+    "meta_description": { "type": "string" },
+    "canonical_url": { "type": "string" },
+    "og_title": { "type": "string" },
+    "og_description": { "type": "string" },
+    "social_image": { "type": "string" },
+    "focus_keyword": { "type": "string" },
+    "robots": { "type": "string", "default": "index,follow" },
+    "published": { "type": "boolean", "default": true }
+  },
+  "required": ["path", "page_title"],
+  "rls": {
+    "read": {},
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}

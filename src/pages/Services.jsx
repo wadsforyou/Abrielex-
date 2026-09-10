@@ -4,9 +4,11 @@ import SectionHeading from "@/components/SectionHeading";
 import ServiceCard from "@/components/ServiceCard";
 import CTASection from "@/components/CTASection";
 import { serviceCategories } from "@/lib/siteData";
+import { useSiteContent } from "@/hooks/use-site-content";
 
 export default function Services() {
   const [query, setQuery] = useState("");
+  const text = useSiteContent("services");
 
   const filtered = serviceCategories.filter(
     (s) =>
@@ -24,12 +26,10 @@ export default function Services() {
             <span className="h-px w-8 bg-primary" />
           </div>
           <h1 className="font-serif-display text-4xl font-bold sm:text-5xl md:text-6xl text-balance">
-            Our services
+            {text("hero_title", "Our services")}
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Five core categories of professional business solutions for Zimbabwean businesses and
-            individuals. Open any dossier for full details — what it is, who it's for, requirements,
-            process and how to request it.
+            {text("hero_description", "Five core categories of professional business solutions for Zimbabwean businesses and individuals. Open any dossier for full details — what it is, who it's for, requirements, process and how to request it.")}
           </p>
         </div>
       </section>

@@ -1,0 +1,4 @@
+const publicPaths = ["/", "/about", "/services", "/resources", "/faq", "/contact", "/get-a-quote", "/privacy", "/terms"];
+const serviceSlugs = ["company-secretarial", "zimra-tax-customs", "praz-vendor-numbers", "bookkeeping-accounting", "general-business-services"];
+function sitemap(origin) { const urls = [...publicPaths, ...serviceSlugs.map((slug) => `/services/${slug}`)]; return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map((path) => `<url><loc>${origin}${path}</loc></url>`).join("")}</urlset>`; }
+export default { fetch(request, env) { const url = new URL(request.url); if (url.pathname === "/sitemap.xml") return new Response(sitemap(url.origin), { headers: { "content-type": "application/xml; charset=UTF-8" } }); return env.ASSETS.fetch(request); } };

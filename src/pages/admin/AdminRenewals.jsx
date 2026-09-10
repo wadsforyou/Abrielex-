@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { RefreshCw } from "lucide-react";
 import { PageHeader, Card, Loader, StatusBadge, EmptyState } from "@/components/portal/ui";
 import { titleCase } from "@/lib/portalConfig";
+import { adminFilter } from "@/lib/adminData";
 
 function daysUntil(d) { return Math.round((new Date(d) - new Date(new Date().toDateString())) / 86400000); }
 
@@ -13,8 +14,8 @@ export default function AdminRenewals() {
   useEffect(() => { (async () => {
     try {
       const [deadlines, compliance] = await Promise.all([
-        base44.entities.Deadline.filter({}, "date", 500),
-        base44.entities.ComplianceItem.filter({}, "-created_date", 500),
+        adminFilter("Deadline", {}, "date", 500),
+        adminFilter("ComplianceItem", {}, "-created_date", 500),
       ]);
       const dItems = deadlines.filter((d) => d.status !== "done").map((d) => ({ id: d.id, title: d.title, company_name: d.company_name, type: titleCase(d.type), date: d.date, days: daysUntil(d.date) }));
       const cItems = compliance.filter((c) => c.expiry_date && c.status !== "completed" && c.status !== "closed").map((c) => ({ id: c.id, title: c.label, company_name: c.company_name, type: titleCase(c.type), date: c.expiry_date, days: daysUntil(c.expiry_date) }));

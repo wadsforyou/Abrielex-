@@ -40,6 +40,13 @@ import AdminFAQs from "./pages/admin/AdminFAQs";
 import AdminContent from "./pages/admin/AdminContent";
 import AdminTemplates from "./pages/admin/AdminTemplates";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminRoles from "./pages/admin/AdminRoles";
+import AdminSEO from "./pages/admin/AdminSEO";
+import AdminIntegrations from "./pages/admin/AdminIntegrations";
+import AdminAudit from "./pages/admin/AdminAudit";
+import AdminAccount from "./pages/admin/AdminAccount";
+import AdminOwnership from "./pages/admin/AdminOwnership";
 
 function App() {
   return (
@@ -53,6 +60,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/admin-login" element={<AdminLogin />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
 
@@ -84,6 +92,13 @@ function App() {
                   <Route path="/admin/content" element={<AdminContent />} />
                   <Route path="/admin/templates" element={<AdminTemplates />} />
                   <Route path="/admin/settings" element={<AdminSettings />} />
+                  <Route path="/admin/users" element={<AdminUsers />} />
+                  <Route path="/admin/roles" element={<AdminRoles />} />
+                  <Route path="/admin/seo" element={<AdminSEO />} />
+                  <Route path="/admin/integrations" element={<AdminIntegrations />} />
+                  <Route path="/admin/audit" element={<AdminAudit />} />
+                  <Route path="/admin/account" element={<AdminAccount />} />
+                  <Route path="/admin/ownership" element={<AdminOwnership />} />
                 </Route>
               </Route>
 

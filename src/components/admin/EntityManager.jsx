@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { Plus, Pencil, Trash2, X, Search, Loader2 } from "lucide-react";
 import { PageHeader, Loader, EmptyState, inputClass } from "@/components/portal/ui";
+import { adminFilter } from "@/lib/adminData";
 
 const DIALOG_LIMIT = 500;
 
@@ -32,7 +33,7 @@ function FieldInput({ field, value, onChange, options }) {
             const f = e.target.files && e.target.files[0]; if (!f) return;
             setUploading(true);
             try { const res = await base44.integrations.Core.UploadFile({ file: f }); onChange(res.file_url); }
-            catch (err) { /* ignore */ } finally { setUploading(false); }
+            catch { /* ignore */ } finally { setUploading(false); }
           }} className="text-xs" />
           {uploading && <Loader2 className="h-4 w-4 animate-spin" />}
           {value && <a href={value} target="_blank" rel="noreferrer" className="text-xs text-primary underline">view</a>}
@@ -59,9 +60,9 @@ export default function EntityManager({
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const list = await base44.entities[entity].filter(fixedFilters, defaultSort, DIALOG_LIMIT);
+      const list = await adminFilter(entity, fixedFilters, defaultSort, DIALOG_LIMIT);
       setRows(list);
-    } catch (e) {
+    } catch {
       setRows([]);
     } finally {
       setLoading(false);
@@ -77,7 +78,7 @@ export default function EntityManager({
           const list = await base44.entities[f.optionsEntity].list("-created_date", 200);
           const opts = list.map((r) => ({ value: r[f.optionsValue], label: r[f.optionsLabel] }));
           setOptionsCache((c) => ({ ...c, [f.key]: opts }));
-        } catch (err) { /* ignore */ }
+        } catch { /* ignore */ }
       }
     });
   }, [entity]);
@@ -95,11 +96,8 @@ export default function EntityManager({
     setSaving(true);
     try {
       const payload = transformOnSave ? transformOnSave(editing) : editing;
-      if (editing.id) {
-        await base44.entities[entity].update(editing.id, payload);
-      } else {
-        await base44.entities[entity].create(payload);
-      }
+      if (editing.id) await base44.functions.invoke("adminControl", { action: "entity_mutation", entity, mutation: "update", id: editing.id, data: payload, auditDetails: `${title} record updated` });
+      else await base44.functions.invoke("adminControl", { action: "entity_mutation", entity, mutation: "create", data: payload, auditDetails: `${title} record created` });
       setEditing(null);
       await load();
     } catch (e) {
@@ -113,7 +111,7 @@ export default function EntityManager({
     if (!deleting) return;
     setSaving(true);
     try {
-      await base44.entities[entity].delete(deleting.id);
+      await base44.functions.invoke("adminControl", { action: "entity_mutation", entity, mutation: "delete", id: deleting.id, auditDetails: `${title} record deleted` });
       setDeleting(null);
       await load();
     } catch (e) {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Search, Users, X, Building2, FolderKanban } from "lucide-react";
 import { PageHeader, Card, Loader, EmptyState, StatusBadge } from "@/components/portal/ui";
+import { adminFilter, adminList } from "@/lib/adminData";
 
 export default function AdminClients() {
   const [users, setUsers] = useState([]);
@@ -12,7 +13,7 @@ export default function AdminClients() {
   const [detail, setDetail] = useState({ companies: [], cases: [] });
 
   useEffect(() => { (async () => {
-    try { setUsers(await base44.entities.User.list("-created_date", 500)); }
+    try { setUsers(await adminList("User")); }
     catch {} finally { setLoading(false); }
   })(); }, []);
 
@@ -20,8 +21,8 @@ export default function AdminClients() {
     setSelected(u);
     try {
       const [companies, cases] = await Promise.all([
-        base44.entities.Company.filter({ created_by_id: u.id }, "-created_date", 100),
-        base44.entities.ServiceCase.filter({ customer_id: u.id }, "-created_date", 100),
+        adminFilter("Company", { created_by_id: u.id }, "-created_date", 100),
+        adminFilter("ServiceCase", { customer_id: u.id }, "-created_date", 100),
       ]);
       setDetail({ companies, cases });
     } catch { setDetail({ companies: [], cases: [] }); }

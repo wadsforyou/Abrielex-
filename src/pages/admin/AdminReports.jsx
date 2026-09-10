@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { PageHeader, Card, Loader } from "@/components/portal/ui";
+import { adminList } from "@/lib/adminData";
 
 export default function AdminReports() {
   const [loading, setLoading] = useState(true);
@@ -9,14 +10,8 @@ export default function AdminReports() {
   useEffect(() => { (async () => {
     try {
       const [users, companies, cases, quotes, consultations, deadlines, docs, tasks] = await Promise.all([
-        base44.entities.User.list("-created_date", 500),
-        base44.entities.Company.list("-created_date", 500),
-        base44.entities.ServiceCase.list("-created_date", 500),
-        base44.entities.Quote.list("-created_date", 500),
-        base44.entities.ConsultationBooking.list("-created_date", 500),
-        base44.entities.Deadline.list("date", 500),
-        base44.entities.PortalDocument.list("-created_date", 500),
-        base44.entities.PortalTask.list("-created_date", 500),
+        adminList("User"), adminList("Company"), adminList("ServiceCase"), adminList("Quote"),
+        adminList("ConsultationBooking"), adminList("Deadline", "date"), adminList("PortalDocument"), adminList("PortalTask"),
       ]);
       const clients = users.filter((u) => u.role === "user");
       const byCountry = {};

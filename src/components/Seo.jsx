@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 // Lightweight per-page SEO: sets document title + meta description + OG tags.
-export default function Seo({ title, description, image }) {
+export default function Seo({ title, description, image, canonical, robots = "index,follow" }) {
   useEffect(() => {
     if (title) document.title = title;
     const setMeta = (selector, attr, name, content) => {
@@ -16,6 +16,15 @@ export default function Seo({ title, description, image }) {
     }
     if (title) setMeta('meta[property="og:title"]', "property", "og:title", title);
     if (image) setMeta('meta[property="og:image"]', "property", "og:image", image);
-  }, [title, description, image]);
+    setMeta('meta[name="robots"]', "name", "robots", robots);
+    const canonicalUrl = canonical || window.location.href.split("#")[0];
+    let canonicalLink = document.head.querySelector('link[rel="canonical"]');
+    if (!canonicalLink) {
+      canonicalLink = document.createElement("link");
+      canonicalLink.setAttribute("rel", "canonical");
+      document.head.appendChild(canonicalLink);
+    }
+    canonicalLink.setAttribute("href", canonicalUrl);
+  }, [title, description, image, canonical, robots]);
   return null;
 }

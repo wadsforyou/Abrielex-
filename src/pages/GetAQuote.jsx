@@ -4,8 +4,10 @@ import { CheckCircle2, Upload, Loader2, FileText, Calendar, FileSpreadsheet, Arr
 import { getCountryServices, consultationTypes, consultationTimeSlots, serviceDetails } from "@/lib/siteData";
 import { base44 } from "@/api/base44Client";
 import { notifyAdmin } from "@/lib/notifyAdmin";
+import { useSiteContent } from "@/hooks/use-site-content";
 
 export default function GetAQuote() {
+  const text = useSiteContent("quote");
   const [params] = useSearchParams();
   const preselectedSlug = params.get("service") || "";
   const preselectedSpecific = params.get("specific") || "";
@@ -27,10 +29,9 @@ export default function GetAQuote() {
             <span className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Get a Quote / Book a Consultation</span>
             <span className="h-px w-8 bg-primary" />
           </div>
-          <h1 className="font-serif-display text-4xl font-bold sm:text-5xl text-balance">Get a Quote / Book a Consultation</h1>
+          <h1 className="font-serif-display text-4xl font-bold sm:text-5xl text-balance">{text("title", "Get a Quote / Book a Consultation")}</h1>
           <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground">
-            Choose how you'd like to engage us. Request a tailored quote for a specific service, or
-            book a professional consultation — in person, by phone, WhatsApp or online.
+            {text("intro", "Choose how you'd like to engage us. Request a tailored quote for a specific service, or book a professional consultation — in person, by phone, WhatsApp or online.")}
           </p>
         </div>
       </section>
@@ -169,7 +170,7 @@ function QuoteForm({ countryServices, preselectedCategory, preselectedSpecific }
       });
       setSubmitted(true);
       window.scrollTo(0, 0);
-    } catch (err) {
+    } catch {
       setError("Something went wrong submitting your request. Please try again or contact us directly.");
     } finally {
       setSubmitting(false);

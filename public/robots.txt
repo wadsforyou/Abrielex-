@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin-login
+Disallow: /login
+Disallow: /register
+Sitemap: https://abrielex.wads-foryou.workers.dev/sitemap.xml

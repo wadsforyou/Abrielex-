@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { MessagesSquare, FileSpreadsheet, CalendarClock, Bell } from "lucide-react";
 import { PageHeader, Card, Loader } from "@/components/portal/ui";
+import { adminList } from "@/lib/adminData";
 
 export default function AdminOverview() {
   const [loading, setLoading] = useState(true);
@@ -12,10 +13,10 @@ export default function AdminOverview() {
   useEffect(() => { (async () => {
     try {
       const [messages, quotes, consultations, notifs] = await Promise.all([
-        base44.entities.ContactMessage.list("-created_date", 500),
-        base44.entities.QuoteRequest.list("-created_date", 500),
-        base44.entities.ConsultationBooking.list("-created_date", 500),
-        base44.entities.PortalNotification.list("-created_date", 5),
+        adminList("ContactMessage"),
+        adminList("QuoteRequest"),
+        adminList("ConsultationBooking"),
+        adminList("PortalNotification", "-created_date", 5),
       ]);
       setStats({
         messages: messages.filter((m) => m.status === "new" || !m.status).length,

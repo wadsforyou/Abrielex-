@@ -13,14 +13,7 @@
       "format": "email"
     },
     "staff_role": {
-      "type": "string",
-      "enum": [
-        "super_admin",
-        "administrator",
-        "consultant",
-        "accountant",
-        "support"
-      ]
+      "type": "string"
     },
     "title": {
       "type": "string"
@@ -31,6 +24,10 @@
     "active": {
       "type": "boolean",
       "default": true
+    },
+    "is_owner": {
+      "type": "boolean",
+      "default": false
     },
     "permissions": {
       "type": "string"

@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SectionHeading from "@/components/SectionHeading";
 import CTASection from "@/components/CTASection";
 import { companyInfo } from "@/lib/siteData";
+import { base44 } from "@/api/base44Client";
 
 const privacySections = [
   {
@@ -302,8 +303,18 @@ const termsSections = [
 ];
 
 export default function Legal({ kind = "privacy" }) {
+  const [content, setContent] = useState({});
   const isPrivacy = kind === "privacy";
-  const sections = isPrivacy ? privacySections : termsSections;
+  useEffect(() => {
+    base44.entities.SiteContent.filter({ section: kind }, "key", 500)
+      .then((rows) => setContent(Object.fromEntries(rows.map((row) => [row.key, row.value]))))
+      .catch(() => {});
+  }, [kind]);
+  const defaults = isPrivacy ? privacySections : termsSections;
+  const sections = defaults.map((section, sectionIndex) => ({
+    title: content[`${kind}.${sectionIndex}.title`] || section.title,
+    body: section.body.map((paragraph, paragraphIndex) => content[`${kind}.${sectionIndex}.body.${paragraphIndex}`] || paragraph),
+  }));
   const title = isPrivacy ? "Privacy Policy" : "Terms and Conditions";
   const intro = isPrivacy
     ? "This Privacy Policy explains how Abrielex Business Consultancy collects, uses and protects your information when you use this website or submit an enquiry."

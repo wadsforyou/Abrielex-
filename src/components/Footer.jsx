@@ -9,8 +9,10 @@ import {
   mailLink,
   serviceCategories,
 } from "@/lib/siteData";
+import { useSiteContent } from "@/hooks/use-site-content";
 
 export default function Footer() {
+  const text = useSiteContent("footer");
   const year = new Date().getFullYear();
   return (
     <footer className="border-t border-border bg-foreground text-white/80">
@@ -21,10 +23,9 @@ export default function Footer() {
             <div className="mb-5 inline-block rounded-md bg-white px-3 py-2">
               <Logo className="h-[60px]" />
             </div>
-            <p className="font-serif-display text-lg italic text-white">{companyInfo.tagline}.</p>
+            <p className="font-serif-display text-lg italic text-white">{text("tagline", companyInfo.tagline)}.</p>
             <p className="mt-4 text-sm leading-relaxed text-white/60">
-              Professional business registration, compliance, tax, financial and general business
-              consultancy services — delivered in person and online.
+              {text("description", "Professional business registration, compliance, tax, financial and general business consultancy services — delivered in person and online.")}
             </p>
             <div className="mt-5 flex gap-3">
               <a href={whatsappLink} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="flex h-9 w-9 items-center justify-center rounded-md border border-white/15 hover:bg-white/10">
