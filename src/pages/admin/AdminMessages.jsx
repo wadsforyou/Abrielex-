@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Send, Loader2, MessagesSquare } from "lucide-react";
 import { PageHeader, Card, Loader, EmptyState, inputClass } from "@/components/portal/ui";
 import { notify } from "@/lib/notify";
+import { adminFilter } from "@/lib/adminData";
 
 export default function AdminMessages() {
   const [all, setAll] = useState([]);
@@ -12,7 +13,7 @@ export default function AdminMessages() {
   const [sending, setSending] = useState(false);
 
   useEffect(() => { (async () => {
-    try { setAll(await base44.entities.PortalMessage.filter({}, "created_date", 1000)); }
+    try { setAll(await adminFilter("PortalMessage", {}, "created_date", 1000)); }
     catch {} finally { setLoading(false); }
   })(); }, []);
 
@@ -27,9 +28,9 @@ export default function AdminMessages() {
     setSending(true);
     try {
       const last = active.messages[active.messages.length - 1];
-      await base44.entities.PortalMessage.create({ customer_id: active.id, case_id: last?.case_id, company_id: last?.company_id, sender: "staff", sender_name: "Abrielex", body: msg, read: false });
+      await base44.functions.invoke("adminControl", { action: "entity_mutation", entity: "PortalMessage", mutation: "create", data: { customer_id: active.id, case_id: last?.case_id, company_id: last?.company_id, sender: "staff", sender_name: "Abrielex", body: msg, read: false }, auditDetails: `Message sent to ${active.id}` });
       await notify({ event: "new_message", variables: { client_name: active.name }, recipientUserId: active.id });
-      setMsg(""); setAll(await base44.entities.PortalMessage.filter({}, "created_date", 1000));
+      setMsg(""); setAll(await adminFilter("PortalMessage", {}, "created_date", 1000));
     } catch {} finally { setSending(false); }
   }
 

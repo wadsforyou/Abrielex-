@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { Plus, Pencil, Trash2, X, Search, Loader2 } from "lucide-react";
 import { PageHeader, Loader, EmptyState, inputClass } from "@/components/portal/ui";
+import { adminFilter } from "@/lib/adminData";
 
 const DIALOG_LIMIT = 500;
 
@@ -59,7 +60,7 @@ export default function EntityManager({
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const list = await base44.entities[entity].filter(fixedFilters, defaultSort, DIALOG_LIMIT);
+      const list = await adminFilter(entity, fixedFilters, defaultSort, DIALOG_LIMIT);
       setRows(list);
     } catch (e) {
       setRows([]);
@@ -96,9 +97,9 @@ export default function EntityManager({
     try {
       const payload = transformOnSave ? transformOnSave(editing) : editing;
       if (editing.id) {
-        await base44.entities[entity].update(editing.id, payload);
+        await base44.functions.invoke("adminControl", { action: "entity_mutation", entity, mutation: "update", id: editing.id, data: payload, auditDetails: `${title} record updated` });
       } else {
-        await base44.entities[entity].create(payload);
+        await base44.functions.invoke("adminControl", { action: "entity_mutation", entity, mutation: "create", data: payload, auditDetails: `${title} record created` });
       }
       setEditing(null);
       await load();
@@ -113,7 +114,7 @@ export default function EntityManager({
     if (!deleting) return;
     setSaving(true);
     try {
-      await base44.entities[entity].delete(deleting.id);
+      await base44.functions.invoke("adminControl", { action: "entity_mutation", entity, mutation: "delete", id: deleting.id, auditDetails: `${title} record deleted` });
       setDeleting(null);
       await load();
     } catch (e) {

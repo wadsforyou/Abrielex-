@@ -1,0 +1,15 @@
+import React from "react";
+import EntityManager from "@/components/admin/EntityManager";
+
+function status(row) {
+  const warnings = [];
+  if (!row.seo_title) warnings.push("title missing"); else if (row.seo_title.length > 60) warnings.push("title long");
+  if (!row.meta_description) warnings.push("description missing"); else if (row.meta_description.length > 160) warnings.push("description long");
+  if (!row.canonical_url) warnings.push("canonical missing");
+  if (!row.og_title || !row.og_description) warnings.push("social metadata incomplete");
+  return warnings.length ? `${warnings.length} warning${warnings.length === 1 ? "" : "s"}` : "Ready";
+}
+
+export default function AdminSEO() {
+  return <EntityManager entity="SeoPage" title="SEO" subtitle="Manage metadata and indexing settings for public pages. A dynamic sitemap function (sitemap) also merges these entries with the static public/sitemap.xml for Search Console submission." defaultSort="path" searchKeys={["path", "page_title", "seo_title", "focus_keyword"]} columns={[{ key: "path", label: "Path" }, { key: "page_title", label: "Page" }, { key: "seo_title", label: "SEO title" }, { key: "meta_description", label: "Description", render: (r) => <span className="max-w-sm truncate text-xs text-muted-foreground">{r.meta_description || "-"}</span> }, { key: "status", label: "Health", render: status }]} fields={[{ key: "path", label: "Public path", required: true }, { key: "page_title", label: "Page title", required: true }, { key: "seo_title", label: "SEO title" }, { key: "meta_description", label: "Meta description", type: "textarea", span: 2 }, { key: "canonical_url", label: "Canonical URL" }, { key: "focus_keyword", label: "Focus keyword" }, { key: "og_title", label: "Open Graph title" }, { key: "og_description", label: "Open Graph description", type: "textarea", span: 2 }, { key: "social_image", label: "Social image URL", span: 2 }, { key: "robots", label: "Robots", type: "select", options: [{ value: "index,follow", label: "Index and follow" }, { value: "noindex,nofollow", label: "Do not index" }] }, { key: "published", label: "Published", type: "boolean" }]} />;
+}

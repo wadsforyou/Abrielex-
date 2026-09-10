@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { PageHeader, Card, Loader } from "@/components/portal/ui";
+import { adminFilter } from "@/lib/adminData";
 
 export default function AdminCalendar() {
   const [cursor, setCursor] = useState(new Date());
@@ -11,9 +12,9 @@ export default function AdminCalendar() {
   useEffect(() => { (async () => {
     try {
       const [d, c, t] = await Promise.all([
-        base44.entities.Deadline.filter({}, "date", 500),
-        base44.entities.ConsultationBooking.filter({}, "-preferred_date", 500),
-        base44.entities.PortalTask.filter({}, "-due_date", 500),
+        adminFilter("Deadline", {}, "date", 500),
+        adminFilter("ConsultationBooking", {}, "-preferred_date", 500),
+        adminFilter("PortalTask", {}, "-due_date", 500),
       ]);
       setEvents([
         ...d.map((x) => ({ date: x.date, label: x.title, tone: "rose" })),

@@ -6,6 +6,7 @@ import FAQAccordion from "@/components/FAQAccordion";
 import ServiceCard from "@/components/ServiceCard";
 import CTASection from "@/components/CTASection";
 import { serviceDetails, serviceCategories } from "@/lib/siteData";
+import { useSiteContent } from "@/hooks/use-site-content";
 
 const sections = [
   { id: "overview", label: "Overview" },
@@ -21,6 +22,7 @@ export default function ServiceDetail() {
   const { slug } = useParams();
   const [active, setActive] = useState("overview");
   const detail = serviceDetails[slug];
+  const text = useSiteContent("service");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -70,7 +72,7 @@ export default function ServiceDetail() {
           <div className="max-w-3xl">
             <span className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Service Dossier</span>
             <h1 className="mt-3 font-serif-display text-4xl font-bold sm:text-5xl text-balance">{displayTitle}</h1>
-            <p className="mt-5 text-base leading-relaxed text-muted-foreground sm:text-lg">{detail.intro}</p>
+            <p className="mt-5 text-base leading-relaxed text-muted-foreground sm:text-lg">{text(`${slug}.intro`, detail.intro)}</p>
             <div className="mt-8">
               <ServiceActions serviceSlug={slug} />
             </div>
@@ -107,10 +109,10 @@ export default function ServiceDetail() {
           <div className="max-w-3xl space-y-16">
             <Block id="overview" icon={<FileText className="h-5 w-5" />} title="Overview">
               <Grid2>
-                <Card title="What it is">{detail.whatItIs}</Card>
-                <Card title="What it's used for">{detail.usedFor}</Card>
-                <Card title="Who it's for">{detail.whoFor}</Card>
-                <Card title="How it helps">{detail.howItHelps}</Card>
+                <Card title="What it is">{text(`${slug}.whatItIs`, detail.whatItIs)}</Card>
+                <Card title="What it's used for">{text(`${slug}.usedFor`, detail.usedFor)}</Card>
+                <Card title="Who it's for">{text(`${slug}.whoFor`, detail.whoFor)}</Card>
+                <Card title="How it helps">{text(`${slug}.howItHelps`, detail.howItHelps)}</Card>
               </Grid2>
               <div className="mt-6">
                 <h4 className="mb-3 font-serif-display text-lg font-semibold">Sub-services</h4>

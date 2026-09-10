@@ -2,7 +2,7 @@
 // Platform roles: "admin" (all Abrielex staff) and "user" (customers).
 // Staff sub-roles live on StaffProfile.staff_role and gate admin sections.
 
-export const STAFF_ROLES = ["super_admin", "administrator", "consultant", "accountant", "support"];
+export const STAFF_ROLES = ["owner", "super_admin", "administrator", "consultant", "accountant", "support"];
 
 export function isStaff(user) {
   return !!user && user.role === "admin";
@@ -15,6 +15,7 @@ export function isCustomer(user) {
 // Admins can override these per role from the Roles & Permissions page;
 // overrides are loaded into `roleOverrides` at runtime by the admin shell.
 export const PERMISSIONS = {
+  owner: "*",
   super_admin: "*",
   administrator: "*",
   consultant: [

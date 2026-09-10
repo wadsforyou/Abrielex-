@@ -4,8 +4,10 @@ import { CheckCircle2, Upload, Loader2, FileText, Calendar, FileSpreadsheet, Arr
 import { getCountryServices, consultationTypes, consultationTimeSlots, serviceDetails } from "@/lib/siteData";
 import { base44 } from "@/api/base44Client";
 import { notifyAdmin } from "@/lib/notifyAdmin";
+import { useSiteContent } from "@/hooks/use-site-content";
 
 export default function GetAQuote() {
+  const text = useSiteContent("quote");
   const [params] = useSearchParams();
   const preselectedSlug = params.get("service") || "";
   const preselectedSpecific = params.get("specific") || "";
@@ -27,11 +29,8 @@ export default function GetAQuote() {
             <span className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Get a Quote / Book a Consultation</span>
             <span className="h-px w-8 bg-primary" />
           </div>
-          <h1 className="font-serif-display text-4xl font-bold sm:text-5xl text-balance">Get a Quote / Book a Consultation</h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground">
-            Choose how you'd like to engage us. Request a tailored quote for a specific service, or
-            book a professional consultation — in person, by phone, WhatsApp or online.
-          </p>
+          <h1 className="font-serif-display text-4xl font-bold sm:text-5xl text-balance">{text("title", "Get a Quote / Book a Consultation")}</h1>
+          <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground">{text("intro", "Tell us about the service you require and provide a few details about your business or organization. We will review your enquiry and provide appropriate guidance regarding your requirements. You can also arrange a consultation to discuss your business requirements, challenges or planned activities with Abrielex Business Consultancy.")}</p>
         </div>
       </section>
 
@@ -42,14 +41,14 @@ export default function GetAQuote() {
               <ChoiceCard
                 icon={<FileSpreadsheet className="h-8 w-8" />}
                 title="Get a Quote"
-                desc="Tell us about your requirement and we'll prepare a tailored quote. No online payment — fees are discussed and arranged with the agency."
+                desc="Tell us about the service you require and provide a few details about your business or organization. We will review your enquiry and provide appropriate guidance regarding your requirements."
                 cta="Get a Quote"
                 onClick={() => setMode("quote")}
               />
               <ChoiceCard
                 icon={<Calendar className="h-8 w-8" />}
                 title="Book a Consultation"
-                desc="Schedule a professional consultation — in person, by phone, WhatsApp or online. Pick a date and time that suits you."
+                desc="Arrange a consultation to discuss your business requirements, challenges or planned activities with Abrielex Business Consultancy."
                 cta="Book a Consultation"
                 onClick={() => setMode("consultation")}
               />

@@ -6,8 +6,10 @@ import CoverageMap from "@/components/CoverageMap";
 import { companyInfo, whatsappLink, telLink, mailLink, serviceCategories } from "@/lib/siteData";
 import { base44 } from "@/api/base44Client";
 import { notifyAdmin } from "@/lib/notifyAdmin";
+import { useSiteContent } from "@/hooks/use-site-content";
 
 export default function Contact() {
+  const text = useSiteContent("contact");
   const [params] = useSearchParams();
   const serviceSlug = params.get("service") || "";
   const serviceTitle = useMemo(
@@ -77,10 +79,7 @@ export default function Contact() {
             <span className="h-px w-8 bg-primary" />
           </div>
           <h1 className="font-serif-display text-4xl font-bold sm:text-5xl md:text-6xl text-balance">Contact us</h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground">
-            Reach us by phone, WhatsApp, email, or visit our office in Bulawayo. We respond to all
-            enquiries promptly.
-          </p>
+          <p className="mx-auto mt-5 max-w-2xl text-base text-muted-foreground">{text("intro", "Reach us by phone, WhatsApp, email, or visit our office in Bulawayo. We respond to all enquiries promptly.")}</p>
         </div>
       </section>
 
@@ -107,7 +106,7 @@ export default function Contact() {
         <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 lg:grid-cols-2">
           {/* office + map */}
           <div>
-            <SectionHeading eyebrow="Our office" title="Visit us in Bulawayo" />
+            <SectionHeading eyebrow={text("office_eyebrow", "Our office")} title={text("office_title", "Visit us in Bulawayo")} />
             <div className="mt-6 space-y-4">
               <div className="flex items-start gap-3">
                 <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-primary" />

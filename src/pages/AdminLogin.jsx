@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { useAuth } from "@/lib/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,10 +9,25 @@ import { ShieldCheck, Mail, Lock, Loader2 } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 
 export default function AdminLogin() {
+  const { isAuthenticated, isLoadingAuth, authChecked, user, checkUserAuth } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!authChecked && !isLoadingAuth) checkUserAuth();
+  }, [authChecked, isLoadingAuth, checkUserAuth]);
+
+  useEffect(() => {
+    if (authChecked && isAuthenticated && user?.role === "admin") {
+      window.location.replace("/admin");
+    }
+  }, [authChecked, isAuthenticated, user]);
+
+  if (!authChecked || isLoadingAuth || (isAuthenticated && user?.role === "admin")) {
+    return null;
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();

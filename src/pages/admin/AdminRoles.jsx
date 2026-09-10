@@ -1,88 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { Plus, Save, Trash2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { Save, Loader2 } from "lucide-react";
-import { PageHeader, Card, Loader } from "@/components/portal/ui";
+import { adminList } from "@/lib/adminData";
+import { PageHeader, Card, Loader, inputClass } from "@/components/portal/ui";
 import { adminNav } from "@/lib/adminNav";
-import { STAFF_ROLES, PERMISSIONS } from "@/lib/roles";
 
-const EDITABLE_ROLES = ["consultant", "accountant", "support"];
-const SECTIONS = adminNav.map((n) => ({ value: n.perm, label: n.label }));
+const permissions = adminNav.map((item) => ({ value: item.perm, label: item.label }));
 
 export default function AdminRoles() {
-  const [perms, setPerms] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-
-  useEffect(() => { (async () => {
-    try {
-      const list = await base44.entities.RolePermission.list("-created_date", 50);
-      const map = {};
-      EDITABLE_ROLES.forEach((role) => {
-        const rec = list.find((r) => r.role === role);
-        map[role] = rec ? (rec.sections || "").split(",").map((s) => s.trim()).filter(Boolean) : (PERMISSIONS[role] === "*" ? SECTIONS.map((s) => s.value) : (PERMISSIONS[role] || []));
-        map[role + "._id"] = rec?.id;
-      });
-      setPerms(map);
-    } catch {} finally { setLoading(false); }
-  })(); }, []);
-
-  function toggle(role, section) {
-    const cur = perms[role] || [];
-    setPerms({ ...perms, [role]: cur.includes(section) ? cur.filter((s) => s !== section) : [...cur, section] });
-  }
-
-  async function save() {
-    setSaving(true);
-    try {
-      for (const role of EDITABLE_ROLES) {
-        const sections = (perms[role] || []).join(",");
-        if (perms[role + "._id"]) {
-          await base44.entities.RolePermission.update(perms[role + "._id"], { role, sections });
-        } else {
-          const rec = await base44.entities.RolePermission.create({ role, sections });
-          setPerms((p) => ({ ...p, [role + "._id"]: rec.id }));
-        }
-      }
-      await base44.entities.AuditLog.create({ action: "permission_change", target_type: "RolePermission", details: "Updated role permissions", actor_name: "admin" });
-      setSaved(true); setTimeout(() => setSaved(false), 2500);
-    } catch (e) { alert("Failed: " + (e.message || "")); } finally { setSaving(false); }
-  }
-
+  const [roles, setRoles] = useState([]); const [loading, setLoading] = useState(true); const [newRole, setNewRole] = useState("");
+  async function load() { try { setRoles(await adminList("RolePermission", "-created_date", 200)); } catch {} finally { setLoading(false); } }
+  useEffect(() => { load(); }, []);
+  function toggle(index, permission) { setRoles(roles.map((role, i) => { if (i !== index) return role; const active = String(role.permissions || role.sections || "").split(",").filter(Boolean); const next = active.includes(permission) ? active.filter((item) => item !== permission) : [...active, permission]; return { ...role, permissions: next.join(",") }; })); }
+  async function save(role) { const data = { role: role.role, permissions: role.permissions || role.sections || "", sections: role.permissions || role.sections || "" }; await base44.functions.invoke("adminControl", { action: "entity_mutation", entity: "RolePermission", mutation: role.id ? "update" : "create", id: role.id, data, auditDetails: `Role ${role.role} saved` }); load(); }
+  async function add() { if (!newRole.trim()) return; await save({ role: newRole.trim(), permissions: "" }); setNewRole(""); }
+  async function remove(role) { if (!role.is_system && window.confirm(`Delete role ${role.role}?`)) { await base44.functions.invoke("adminControl", { action: "entity_mutation", entity: "RolePermission", mutation: "delete", id: role.id, auditDetails: `Role ${role.role} deleted` }); load(); } }
   if (loading) return <Loader />;
-
-  return (
-    <div>
-      <PageHeader title="Roles & Permissions" subtitle="Control which admin sections each staff role can access"
-        actions={[<button key="s" onClick={save} disabled={saving} className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save permissions</button>]} />
-      <div className="mb-4 flex items-center gap-3">
-        {saved && <span className="text-sm text-emerald-600">Saved.</span>}
-      </div>
-      <Card className="overflow-x-auto p-5">
-        <table className="w-full text-sm">
-          <thead className="text-left text-xs uppercase text-muted-foreground">
-            <tr>
-              <th className="px-3 py-2">Section</th>
-              {EDITABLE_ROLES.map((role) => <th key={role} className="px-3 py-2 capitalize">{role.replace("_", " ")}</th>)}
-              <th className="px-3 py-2">super_admin / administrator</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {SECTIONS.map((s) => (
-              <tr key={s.value}>
-                <td className="px-3 py-2 font-medium">{s.label}</td>
-                {EDITABLE_ROLES.map((role) => (
-                  <td key={role} className="px-3 py-2">
-                    <input type="checkbox" checked={(perms[role] || []).includes(s.value)} onChange={() => toggle(role, s.value)} className="h-4 w-4" />
-                  </td>
-                ))}
-                <td className="px-3 py-2 text-xs text-muted-foreground">Full access (always)</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Card>
-      <p className="mt-3 text-xs text-muted-foreground">super_admin and administrator always have full access. Changes take effect for staff on their next dashboard load.</p>
-    </div>
-  );
+  return <div><PageHeader title="Roles & Permissions" subtitle="Create custom roles and assign granular dashboard access" actions={[<div key="new" className="flex gap-2"><input className={inputClass} placeholder="New role name" value={newRole} onChange={(e) => setNewRole(e.target.value)} /><button onClick={add} className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white"><Plus className="h-4 w-4" /> Add</button></div>]} /><div className="space-y-4">{roles.map((role, index) => { const active = String(role.permissions || role.sections || "").split(",").filter(Boolean); return <Card key={role.id || role.role} className="p-5"><div className="flex items-center justify-between"><h2 className="font-serif-display text-lg font-semibold">{role.role}</h2><div className="flex gap-2"><button onClick={() => save(role)} className="inline-flex items-center gap-1 text-sm text-primary"><Save className="h-4 w-4" /> Save</button><button onClick={() => remove(role)} className="text-rose-600" aria-label={`Delete ${role.role}`}><Trash2 className="h-4 w-4" /></button></div></div><div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">{permissions.map((permission) => <label key={permission.value} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={active.includes(permission.value)} onChange={() => toggle(index, permission.value)} />{permission.label}</label>)}</div></Card>; })}</div></div>;
 }

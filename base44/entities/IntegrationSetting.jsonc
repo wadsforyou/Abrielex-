@@ -1,0 +1,23 @@
+{
+  "name": "IntegrationSetting",
+  "type": "object",
+  "properties": {
+    "kind": { "type": "string" },
+    "status": { "type": "string", "default": "not_connected" },
+    "property_url": { "type": "string" },
+    "measurement_id": { "type": "string" },
+    "sitemap_url": { "type": "string" },
+    "setup_notes": { "type": "string" },
+    "connected_at": { "type": "string" },
+    "verification_token": { "type": "string", "description": "Content of the google-site-verification meta tag value (Search Console HTML-file/tag method)" },
+    "gtag_loaded": { "type": "boolean", "default": false, "description": "True once the GA4 gtag script is injected on the public site" },
+    "data_stream_id": { "type": "string" }
+  },
+  "required": ["kind"],
+  "rls": {
+    "read": {},
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}

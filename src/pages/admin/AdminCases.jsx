@@ -5,6 +5,7 @@ import { PageHeader, Card, Loader, EmptyState, StatusBadge, inputClass } from "@
 import { CASE_STATUS, PRIORITY } from "@/lib/portalConfig";
 import { serviceCategories } from "@/lib/siteData";
 import { notify } from "@/lib/notify";
+import { adminFilter } from "@/lib/adminData";
 
 const blank = { title: "", company_id: "", company_name: "", customer_id: "", customer_name: "", service_category: serviceCategories[0]?.title || "", specific_service: "", description: "", status: "submitted", priority: "medium", assigned_staff_id: "", assigned_staff_name: "", due_date: "", internal_notes: "" };
 
@@ -18,7 +19,7 @@ export default function AdminCases() {
 
   async function load() {
     setLoading(true);
-    try { setCases(await base44.entities.ServiceCase.filter({}, "-created_date", 500)); }
+    try { setCases(await adminFilter("ServiceCase", {}, "-created_date", 500)); }
     catch {} finally { setLoading(false); }
   }
   useEffect(() => { load(); }, []);
@@ -31,18 +32,16 @@ export default function AdminCases() {
       const payload = { ...editing };
       delete payload.created_date; delete payload.updated_date; delete payload.id; delete payload.created_by_id;
       if (editing.id) {
-        await base44.entities.ServiceCase.update(editing.id, payload);
+        await base44.functions.invoke("adminControl", { action: "entity_mutation", entity: "ServiceCase", mutation: "update", id: editing.id, data: payload, auditDetails: `Case ${editing.title} updated` });
         if (statusChanged) {
-          await base44.entities.CaseUpdate.create({
+          await base44.functions.invoke("adminControl", { action: "entity_mutation", entity: "CaseUpdate", mutation: "create", data: {
             case_id: editing.id, customer_id: editing.customer_id, author_name: "Abrielex",
             title: `Status updated to ${editing.status.replace(/_/g, " ")}`, body: `Your case "${editing.title}" status is now: ${editing.status.replace(/_/g, " ")}.`, internal: false, new_status: editing.status,
-          });
+          }, auditDetails: `Case ${editing.title} status update` });
           await notify({ event: "case_status_update", variables: { case_number: editing.title, status: editing.status.replace(/_/g, " "), client_name: editing.customer_name }, recipientUserId: editing.customer_id, recipientEmail: "", adminNotify: false });
         }
-        await base44.entities.AuditLog.create({ action: "case_update", target_type: "ServiceCase", target_id: editing.id, details: `Status: ${editing.status}`, actor_name: "admin" });
       } else {
-        await base44.entities.ServiceCase.create(payload);
-        await base44.entities.AuditLog.create({ action: "case_create", target_type: "ServiceCase", details: editing.title, actor_name: "admin" });
+        await base44.functions.invoke("adminControl", { action: "entity_mutation", entity: "ServiceCase", mutation: "create", data: payload, auditDetails: `Case ${editing.title} created` });
       }
       setEditing(null); await load();
     } catch (e) { alert("Save failed: " + (e.message || "")); } finally { setSaving(false); }

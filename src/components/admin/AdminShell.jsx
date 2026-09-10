@@ -20,7 +20,8 @@ export default function AdminShell() {
         const me = await base44.auth.me();
         if (me?.data?.staff_role) setStaffRole(me.data.staff_role);
         const sp = await base44.entities.StaffProfile.filter({ user_id: me.id });
-        if (sp[0]?.staff_role) setStaffRole(sp[0].staff_role);
+        if (sp[0]?.is_owner || sp[0]?.staff_role === "super_admin") setStaffRole("owner");
+        else if (sp[0]?.staff_role) setStaffRole(sp[0].staff_role);
         const perms = await base44.entities.RolePermission.list("-created_date", 50);
         if (perms.length) {
           const map = {};
@@ -42,7 +43,9 @@ export default function AdminShell() {
     <div className="flex h-full flex-col bg-slate-900 text-slate-300">
       <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
         <Link to="/admin" className="flex items-center">
-          <Logo variant="light" className="h-10" />
+          <span className="flex h-[45px] items-center bg-white px-2">
+            <Logo variant="light" className="h-[45px]" />
+          </span>
         </Link>
         <button className="lg:hidden text-slate-400" onClick={() => setOpen(false)} aria-label="Close menu">
           <X className="h-5 w-5" />

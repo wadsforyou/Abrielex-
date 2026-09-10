@@ -7,6 +7,13 @@
     },
     "sections": {
       "type": "string"
+    },
+    "permissions": {
+      "type": "string"
+    },
+    "is_system": {
+      "type": "boolean",
+      "default": false
     }
   },
   "required": [
