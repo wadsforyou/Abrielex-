@@ -4,4 +4,8 @@ Disallow: /admin
 Disallow: /admin-login
 Disallow: /login
 Disallow: /register
+Disallow: /reset-password
+Disallow: /forgot-password
+
+# Only the canonical domain should be indexed
 Sitemap: https://abrielex.wads-foryou.workers.dev/sitemap.xml

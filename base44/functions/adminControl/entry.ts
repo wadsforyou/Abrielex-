@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 
-const permissionFor = { StaffProfile: "users", User: "users", RolePermission: "roles", SiteContent: "content", SeoPage: "seo", IntegrationSetting: "integrations", AuditLog: "audit", Service: "services", Resource: "resources", FAQItem: "faqs", NotificationTemplate: "templates", NotificationSetting: "settings", ContactMessage: "messages", Quote: "quotes", QuoteRequest: "quotes", ConsultationBooking: "consultations", Testimonial: "content", CareerOpening: "content", Company: "companies", ServiceCase: "cases", CaseUpdate: "cases", PortalDocument: "documents", PortalTask: "tasks", Deadline: "deadlines", ComplianceItem: "renewals", PortalNotification: "notifications", PortalMessage: "messages" };
+const permissionFor = { StaffProfile: "users", User: "users", RolePermission: "roles", SiteContent: "content", SeoPage: "seo", IntegrationSetting: "integrations", AuditLog: "audit", Service: "services", ServiceCategory: "services", Resource: "resources", FAQItem: "faqs", Location: "content", Country: "content", NotificationTemplate: "templates", NotificationSetting: "settings", ContactMessage: "messages", Quote: "quotes", QuoteRequest: "quotes", Consultation: "consultations", ConsultationBooking: "consultations", Testimonial: "content", CareerOpening: "content", Company: "companies", ServiceCase: "cases", CaseUpdate: "cases", PortalDocument: "documents", PortalTask: "tasks", Deadline: "deadlines", ComplianceItem: "renewals", PortalNotification: "notifications", PortalMessage: "messages" };
 
 async function getContext(base44, actor) {
   const profiles = await base44.asServiceRole.entities.StaffProfile.list("-created_date", 500);
@@ -10,6 +10,44 @@ async function getContext(base44, actor) {
   const roles = await base44.asServiceRole.entities.RolePermission.list("-created_date", 500);
   const role = roles.find((item) => item.role === profile.staff_role);
   return { profiles, profile, owner: false, permissions: String(role?.permissions || role?.sections || "").split(",").map((item) => item.trim()).filter(Boolean) };
+}
+
+// Idempotent CMS seeding. The `seed` payload carries the existing live-site content
+// (already truthful). We only create records that are not already present, so an
+// administrator's later edits are never overwritten by re-running the seed.
+async function seedCms(base44, seed, force) {
+  const summary = {};
+  const collections = [
+    "ServiceCategory", "Service", "FAQItem", "Resource", "SiteContent",
+    "Location", "NotificationTemplate", "Country", "Testimonial", "SeoPage",
+  ];
+  for (const name of collections) {
+    const rows = Array.isArray(seed[name]) ? seed[name] : [];
+    if (!rows.length) continue;
+    const entity = base44.asServiceRole.entities[name];
+    const existing = force ? [] : await entity.list("-created_date", 1000);
+    let created = 0, skipped = 0, patched = 0;
+    for (const row of rows) {
+      const key = row.key || row.slug || row.question || row.title || row.city || (row.event && row.channel ? `${row.event}:${row.channel}` : undefined);
+      const duplicate = key ? existing.find((e) => (e.key || e.slug || e.question || e.title || e.city || (e.event && e.channel ? `${e.event}:${e.channel}` : undefined)) === key) : false;
+      if (duplicate) {
+        // Backfill fields the existing record is missing (e.g. map coordinates
+        // added after the record was first created). Never overwrite values the
+        // administrator has already set.
+        const missing = {};
+        for (const [k, v] of Object.entries(row)) {
+          if (duplicate[k] === undefined || duplicate[k] === null || duplicate[k] === "") missing[k] = v;
+        }
+        if (Object.keys(missing).length) { await entity.update(duplicate.id, missing); patched++; }
+        skipped++;
+        continue;
+      }
+      await entity.create(row);
+      created++;
+    }
+    summary[name] = { created, skipped, patched };
+  }
+  return summary;
 }
 
 export default async function(req) {
@@ -30,6 +68,27 @@ export default async function(req) {
         ? await entity.filter(body.filters || {}, body.sort || "-created_date", body.limit || 500)
         : await entity.list(body.sort || "-created_date", body.limit || 500);
       return Response.json({ ok: true, result });
+    }
+
+    if (body.action === "seed_cms") {
+      if (!can("content")) return Response.json({ error: "Website content permission required" }, { status: 403 });
+      const summary = await seedCms(base44, body.seed || {}, !!body.force);
+      await base44.asServiceRole.entities.AuditLog.create({ actor_id: actor.id, actor_name: actor.email, action: "cms_seeded", target_type: "SiteContent", details: `Seeded CMS content: ${JSON.stringify(summary)}` });
+      return Response.json({ ok: true, result: summary });
+    }
+
+    if (body.action === "log_activity") {
+      if (!can("audit")) return Response.json({ error: "Audit permission required" }, { status: 403 });
+      if (!body.action_name) return Response.json({ error: "action_name is required" }, { status: 400 });
+      const logged = await base44.asServiceRole.entities.AuditLog.create({
+        actor_id: actor.id,
+        actor_name: actor.email,
+        action: body.action_name,
+        target_type: body.target_type || "",
+        target_id: body.target_id || "",
+        details: body.details || "",
+      });
+      return Response.json({ ok: true, result: logged });
     }
 
     if (body.action === "invite_user") {
@@ -55,6 +114,7 @@ export default async function(req) {
       if (!permission) return Response.json({ error: "Entity mutation is not permitted" }, { status: 400 });
       if (!can(permission)) return Response.json({ error: `Permission required: ${permission}` }, { status: 403 });
       if (body.entity === "StaffProfile" && body.data?.is_owner && !context.owner) return Response.json({ error: "Only the owner can grant ownership" }, { status: 403 });
+      if (body.entity === "User") return Response.json({ error: "User records are managed through invitations, not direct mutation" }, { status: 400 });
       const entity = base44.asServiceRole.entities[body.entity];
       let result;
       if (body.mutation === "create") result = await entity.create(body.data || {});

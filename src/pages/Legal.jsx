@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import SectionHeading from "@/components/SectionHeading";
 import CTASection from "@/components/CTASection";
+import Seo from "@/components/Seo";
 import { companyInfo } from "@/lib/siteData";
 import { base44 } from "@/api/base44Client";
 
@@ -322,6 +322,7 @@ export default function Legal({ kind = "privacy" }) {
 
   return (
     <>
+      <Seo title={isPrivacy ? "Privacy Policy — Abrielex Business Consultancy" : "Terms of Service — Abrielex Business Consultancy"} description={isPrivacy ? "Privacy policy for Abrielex Business Consultancy website and client services." : "Terms of service for using the Abrielex Business Consultancy website and engaging our services."} />
       <section className="border-b border-border bg-muted/30">
         <div className="mx-auto max-w-4xl px-6 py-16 text-center">
           <div className="mb-4 flex items-center justify-center gap-3">

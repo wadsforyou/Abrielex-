@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
-import { MessagesSquare, FileSpreadsheet, CalendarClock, Bell } from "lucide-react";
-import { PageHeader, Card, Loader } from "@/components/portal/ui";
+import { MessagesSquare, FileSpreadsheet, CalendarClock, Bell, Database } from "lucide-react";
+import { PageHeader, Card, Loader, EmptyState } from "@/components/portal/ui";
 import { adminList } from "@/lib/adminData";
+import { base44 } from "@/api/base44Client";
+import { buildCmsSeed } from "@/lib/cmsSeed";
 
 export default function AdminOverview() {
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [stats, setStats] = useState({});
   const [recent, setRecent] = useState([]);
+  const [seeding, setSeeding] = useState(false);
+  const [seedSummary, setSeedSummary] = useState(null);
 
-  useEffect(() => { (async () => {
+  async function load() {
+    setLoading(true);
+    setError("");
     try {
       const [messages, quotes, consultations, notifs] = await Promise.all([
         adminList("ContactMessage"),
@@ -27,10 +33,32 @@ export default function AdminOverview() {
         totalConsultations: consultations.length,
       });
       setRecent(notifs);
-    } catch {} finally { setLoading(false); }
-  })(); }, []);
+    } catch (e) {
+      setError(e?.response?.data?.error || e?.message || "Unable to load dashboard data");
+    } finally { setLoading(false); }
+  }
+
+  useEffect(() => { load(); }, []);
+
+  // One-click import of the existing live-site content into the database.
+  // Idempotent: existing records (including admin edits) are never overwritten.
+  async function syncContent() {
+    setSeeding(true);
+    setSeedSummary(null);
+    try {
+      const res = await base44.functions.invoke("adminControl", {
+        action: "seed_cms",
+        seed: buildCmsSeed(),
+      });
+      setSeedSummary(res?.result || {});
+      await load();
+    } catch (e) {
+      setError(e?.response?.data?.error || e?.message || "Content sync failed");
+    } finally { setSeeding(false); }
+  }
 
   if (loading) return <Loader />;
+  if (error) return <div><PageHeader title="Overview" subtitle="Abrielex management dashboard" /><EmptyState icon={Bell} title="Could not load dashboard" message={error} action={<button onClick={load} className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white">Retry</button>} /></div>;
   const cards = [
     { label: "New messages", value: stats.messages, total: stats.totalMessages, icon: MessagesSquare, to: "/admin/messages" },
     { label: "New quote requests", value: stats.quotes, total: stats.totalQuotes, icon: FileSpreadsheet, to: "/admin/quotes" },
@@ -59,6 +87,25 @@ export default function AdminOverview() {
           : <ul className="divide-y divide-border">{recent.map((n) => (
             <li key={n.id} className="flex items-start gap-3 py-3"><Bell className="mt-0.5 h-4 w-4 text-primary" /><div><div className="text-sm font-medium">{n.title}</div><div className="text-xs text-muted-foreground">{n.body}</div></div></li>
           ))}</ul>}
+      </Card>
+
+      <Card className="mt-6 p-5">
+        <h2 className="mb-2 flex items-center gap-2 font-serif-display text-lg font-semibold"><Database className="h-4 w-4" /> Website content &amp; database</h2>
+        <p className="text-sm text-muted-foreground">
+          Import the existing Abrielex website content (services, FAQs, resources, cities, company details and
+          notification templates) into the database so every section is editable. Running this never overwrites
+          content you have already edited.
+        </p>
+        <div className="mt-4 flex items-center gap-3">
+          <button onClick={syncContent} disabled={seeding} className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">
+            {seeding ? "Syncing…" : "Sync website content to database"}
+          </button>
+          {seedSummary && (
+            <span className="text-xs text-muted-foreground">
+              {Object.entries(seedSummary).map(([k, v]) => `${k}: +${v.created}/${v.skipped} skipped`).join(" · ")}
+            </span>
+          )}
+        </div>
       </Card>
     </div>
   );

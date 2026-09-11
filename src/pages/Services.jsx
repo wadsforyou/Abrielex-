@@ -3,12 +3,14 @@ import { Search } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
 import ServiceCard from "@/components/ServiceCard";
 import CTASection from "@/components/CTASection";
-import { serviceCategories } from "@/lib/siteData";
+import Seo from "@/components/Seo";
+import { useServiceCategories } from "@/lib/cms";
 import { useSiteContent } from "@/hooks/use-site-content";
 
 export default function Services() {
   const [query, setQuery] = useState("");
   const text = useSiteContent("services");
+  const serviceCategories = useServiceCategories();
 
   const filtered = serviceCategories.filter(
     (s) =>
@@ -18,6 +20,7 @@ export default function Services() {
 
   return (
     <>
+      <Seo title="Our Services — Abrielex Business Consultancy" description="Company secretarial, ZIMRA tax & customs, PRAZ & vendor numbers, bookkeeping & financial, and general business services for Zimbabwean businesses and individuals." />
       <section className="border-b border-border bg-muted/30">
         <div className="mx-auto max-w-4xl px-6 py-20 text-center">
           <div className="mb-4 flex items-center justify-center gap-3">

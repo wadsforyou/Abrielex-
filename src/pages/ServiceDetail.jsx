@@ -5,7 +5,8 @@ import ServiceActions from "@/components/ServiceActions";
 import FAQAccordion from "@/components/FAQAccordion";
 import ServiceCard from "@/components/ServiceCard";
 import CTASection from "@/components/CTASection";
-import { serviceDetails, serviceCategories } from "@/lib/siteData";
+import Seo from "@/components/Seo";
+import { useServiceCategories, fallbackDetails } from "@/lib/cms";
 import { useSiteContent } from "@/hooks/use-site-content";
 
 const sections = [
@@ -21,7 +22,8 @@ const sections = [
 export default function ServiceDetail() {
   const { slug } = useParams();
   const [active, setActive] = useState("overview");
-  const detail = serviceDetails[slug];
+  const serviceCategories = useServiceCategories();
+  const detail = serviceCategories.find((c) => c.slug === slug) || fallbackDetails[slug];
   const text = useSiteContent("service");
 
   useEffect(() => {
@@ -61,6 +63,7 @@ export default function ServiceDetail() {
 
   return (
     <>
+      <Seo title={`${displayTitle} in Zimbabwe — Abrielex Business Consultancy`} description={(detail.intro || `${displayTitle} provided by Abrielex Business Consultancy in Zimbabwe.`).slice(0, 158)} />
       {/* hero */}
       <section className="border-b border-border bg-muted/30">
         <div className="mx-auto max-w-7xl px-6 py-16">

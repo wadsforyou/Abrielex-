@@ -3,19 +3,25 @@ import { useSearchParams } from "react-router-dom";
 import { Phone, Mail, MapPin, MessageCircle, Facebook, Loader2, CheckCircle2, Clock } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
 import CoverageMap from "@/components/CoverageMap";
-import { companyInfo, whatsappLink, telLink, mailLink, serviceCategories } from "@/lib/siteData";
+import Seo from "@/components/Seo";
 import { base44 } from "@/api/base44Client";
 import { notifyAdmin } from "@/lib/notifyAdmin";
 import { useSiteContent } from "@/hooks/use-site-content";
+import { useCompanyInfo, useServiceCategories } from "@/lib/cms";
 
 export default function Contact() {
   const text = useSiteContent("contact");
+  const companyInfo = useCompanyInfo();
+  const serviceCategories = useServiceCategories();
   const [params] = useSearchParams();
   const serviceSlug = params.get("service") || "";
   const serviceTitle = useMemo(
     () => (serviceSlug ? serviceCategories.find((s) => s.slug === serviceSlug)?.title || "" : ""),
-    [serviceSlug]
+    [serviceSlug, serviceCategories]
   );
+  const whatsappLink = `https://wa.me/${companyInfo.whatsappIntl}`;
+  const telLink = `tel:${companyInfo.phoneIntl}`;
+  const mailLink = `mailto:${companyInfo.email}`;
 
   const [form, setForm] = useState({
     name: "",
@@ -71,6 +77,7 @@ export default function Contact() {
 
   return (
     <>
+      <Seo title="Contact Us — Abrielex Business Consultancy" description="Contact Abrielex Business Consultancy by phone, WhatsApp or email. Visit our office in Bulawayo or use our remote services across Zimbabwe." image={companyInfo.logoUrl} />
       <section className="border-b border-border bg-muted/30">
         <div className="mx-auto max-w-4xl px-6 py-16 text-center">
           <div className="mb-4 flex items-center justify-center gap-3">
@@ -118,7 +125,7 @@ export default function Contact() {
               </div>
               <div className="flex items-start gap-3">
                 <Clock className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <div className="text-sm text-muted-foreground">Office hours: Monday – Friday, 08:00 – 16:30</div>
+                <div className="text-sm text-muted-foreground">Office hours: {companyInfo.officeHours}</div>
               </div>
             </div>
 
@@ -126,7 +133,7 @@ export default function Contact() {
             <div className="mt-6 overflow-hidden rounded-lg border border-border">
               <iframe
                 title="Abrielex office location"
-                src="https://www.openstreetmap.org/export/embed.html?bbox=28.5740%2C-20.1600%2C28.5900%2C-20.1500&layer=mapnik&marker=-20.1550%2C28.5820"
+                src={companyInfo.mapEmbed || "https://www.openstreetmap.org/export/embed.html?bbox=28.5740%2C-20.1600%2C28.5900%2C-20.1500&layer=mapnik&marker=-20.1550%2C28.5820"}
                 className="h-72 w-full"
                 loading="lazy"
               />

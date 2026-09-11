@@ -5,6 +5,7 @@ import { getCountryServices, consultationTypes, consultationTimeSlots, serviceDe
 import { base44 } from "@/api/base44Client";
 import { notifyAdmin } from "@/lib/notifyAdmin";
 import { useSiteContent } from "@/hooks/use-site-content";
+import Seo from "@/components/Seo";
 
 export default function GetAQuote() {
   const text = useSiteContent("quote");
@@ -22,6 +23,7 @@ export default function GetAQuote() {
 
   return (
     <>
+      <Seo title="Get a Quote or Book a Consultation — Abrielex Business Consultancy" description="Request a quote or book a consultation with Abrielex Business Consultancy for business registration, tax, procurement, bookkeeping and compliance services in Zimbabwe." />
       <section className="border-b border-border bg-muted/30">
         <div className="mx-auto max-w-4xl px-6 py-16 text-center">
           <div className="mb-4 flex items-center justify-center gap-3">

@@ -10,13 +10,7 @@ import CTASection from "@/components/CTASection";
 import Seo from "@/components/Seo";
 import { Image } from "@/components/ui/image";
 import { useSiteContent } from "@/hooks/use-site-content";
-import {
-  serviceCategories,
-  generalFaqs,
-  countryFaqs,
-  resources,
-  companyInfo,
-} from "@/lib/siteData";
+import { useServiceCategories, useFaqs, useResources, useCompanyInfo } from "@/lib/cms";
 
 const CONSULT_IMG = "https://media.base44.com/images/public/6a9fbe96952aa2db4053eb18/582a64e5b_generated_10b126d7.jpg";
 
@@ -38,6 +32,10 @@ const howItWorks = [
 
 export default function Home() {
   const text = useSiteContent("home");
+  const serviceCategories = useServiceCategories();
+  const faqs = useFaqs();
+  const resources = useResources();
+  const companyInfo = useCompanyInfo();
   return (
     <>
       <Seo title="Abrielex Business Consultancy — Secure Your Business With Us" description="Professional business registration, tax, procurement, bookkeeping and compliance services across multiple cities in Zimbabwe." image={companyInfo.logoUrl} />
@@ -163,7 +161,7 @@ export default function Home() {
         <div className="mx-auto max-w-3xl px-6 py-20">
           <SectionHeading align="center" eyebrow="FAQ" title="Frequently asked questions" />
           <div className="mt-10">
-            <FAQAccordion items={[...generalFaqs, ...(countryFaqs.ZW || [])].slice(0, 6)} />
+            <FAQAccordion items={faqs.slice(0, 6)} />
           </div>
           <div className="mt-8 text-center">
             <Link to="/faq" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">

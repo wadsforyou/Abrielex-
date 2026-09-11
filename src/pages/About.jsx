@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { Target, Eye, Compass, MapPin, Laptop, ArrowRight } from "lucide-react";
+import { Target, Eye, Compass, MapPin, Laptop } from "lucide-react";
 import SectionHeading from "@/components/SectionHeading";
 import CTASection from "@/components/CTASection";
+import Seo from "@/components/Seo";
 import { Image } from "@/components/ui/image";
-import { companyInfo } from "@/lib/siteData";
 import { base44 } from "@/api/base44Client";
+import { useLocations } from "@/lib/cms";
+import { companyInfo } from "@/lib/siteData";
 
 const OFFICE_IMG = "https://media.base44.com/images/public/6a9fbe96952aa2db4053eb18/94bdf4fb9_generated_147ebd7a.jpg";
 
@@ -21,6 +22,8 @@ const values = [
 
 export default function About() {
   const [content, setContent] = useState({});
+  const locations = useLocations();
+  const coverage = locations.map((l) => l.city).filter(Boolean);
 
   useEffect(() => {
     base44.entities.SiteContent.filter({ section: "about" }, "key", 100)
@@ -28,10 +31,25 @@ export default function About() {
       .catch(() => {});
   }, []);
 
-  const text = (key, fallback) => content[`about.${key}`] || fallback;
+  // Look a value up by the dotted section key, allowing for the shorter key
+  // variants used by some seeded records (e.g. "about.mission" for mission_body).
+  const aliases = {
+    mission_body: ["about.mission_body", "about.mission"],
+    vision_body: ["about.vision_body", "about.vision"],
+    story_body: ["about.story_body", "about.story"],
+    intro_description: ["about.intro_description", "about.intro"],
+  };
+  const text = (key, fallback) => {
+    const candidates = aliases[key] || [`about.${key}`];
+    for (const k of candidates) {
+      if (content[k]) return content[k];
+    }
+    return fallback;
+  };
 
   return (
     <>
+      <Seo title="About Us — Abrielex Business Consultancy" description="Abrielex Business Consultancy was registered in 2020 to support businesses across Zimbabwe with registration, compliance, tax, bookkeeping, procurement and administrative services." image={companyInfo.logoUrl} />
       {/* hero */}
       <section className="border-b border-border bg-muted/30">
         <div className="mx-auto max-w-4xl px-6 py-20 text-center">
@@ -137,7 +155,7 @@ export default function About() {
                 <MapPin className="h-7 w-7 shrink-0 text-primary" strokeWidth={1.5} />
                 <div>
                   <h4 className="font-serif-display text-lg font-semibold">Multi-city coverage</h4>
-                  <p className="mt-1 text-sm text-muted-foreground">We provide business consultancy and support services across multiple cities in Zimbabwe, including {companyInfo.coverage.join(", ")} — serving clients across multiple cities in Zimbabwe.</p>
+                  <p className="mt-1 text-sm text-muted-foreground">We provide business consultancy and support services across multiple cities in Zimbabwe, including {coverage.join(", ")} — serving clients across multiple cities in Zimbabwe.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4 border border-border bg-card p-6">

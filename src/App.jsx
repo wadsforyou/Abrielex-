@@ -18,6 +18,7 @@ import GetAQuote from "./pages/GetAQuote";
 import Resources from "./pages/Resources";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
+import Locations from "./pages/Locations";
 import Legal from "./pages/Legal";
 
 // Auth pages (registered per platform requirement; customer login is not linked publicly)
@@ -35,6 +36,7 @@ import AdminNotifications from "./pages/admin/AdminNotifications";
 import AdminQuotes from "./pages/admin/AdminQuotes";
 import AdminConsultations from "./pages/admin/AdminConsultations";
 import AdminServices from "./pages/admin/AdminServices";
+import AdminLocations from "./pages/admin/AdminLocations";
 import AdminResources from "./pages/admin/AdminResources";
 import AdminFAQs from "./pages/admin/AdminFAQs";
 import AdminContent from "./pages/admin/AdminContent";
@@ -74,6 +76,8 @@ function App() {
                 <Route path="/resources" element={<Resources />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/locations" element={<Locations />} />
+                <Route path="/locations/:city" element={<Locations />} />
                 <Route path="/privacy" element={<Legal kind="privacy" />} />
                 <Route path="/terms" element={<Legal kind="terms" />} />
               </Route>
@@ -87,6 +91,7 @@ function App() {
                   <Route path="/admin/quotes" element={<AdminQuotes />} />
                   <Route path="/admin/consultations" element={<AdminConsultations />} />
                   <Route path="/admin/services" element={<AdminServices />} />
+                  <Route path="/admin/locations" element={<AdminLocations />} />
                   <Route path="/admin/resources" element={<AdminResources />} />
                   <Route path="/admin/faqs" element={<AdminFAQs />} />
                   <Route path="/admin/content" element={<AdminContent />} />

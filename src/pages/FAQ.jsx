@@ -3,15 +3,17 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import FAQAccordion from "@/components/FAQAccordion";
 import CTASection from "@/components/CTASection";
-import { generalFaqs, countryFaqs } from "@/lib/siteData";
+import Seo from "@/components/Seo";
+import { useFaqs } from "@/lib/cms";
 import { useSiteContent } from "@/hooks/use-site-content";
 
 export default function FAQ() {
   const text = useSiteContent("faq");
-  const items = [...generalFaqs, ...(countryFaqs.ZW || [])];
+  const items = useFaqs();
 
   return (
     <>
+      <Seo title="FAQs — Abrielex Business Consultancy" description="Answers to common questions about Abrielex Business Consultancy services — business registration, tax, procurement, bookkeeping, compliance and how we work." faqs={items} schemaTypeOverride="FAQPage" />
       <section className="border-b border-border bg-muted/30">
         <div className="mx-auto max-w-4xl px-6 py-16 text-center">
           <div className="mb-4 flex items-center justify-center gap-3">

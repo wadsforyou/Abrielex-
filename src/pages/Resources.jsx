@@ -2,9 +2,12 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Search, Filter, ChevronDown, ChevronUp } from "lucide-react";
 import CTASection from "@/components/CTASection";
-import { resources, resourceCategories, countries } from "@/lib/siteData";
+import Seo from "@/components/Seo";
+import { resourceCategories, countries } from "@/lib/siteData";
+import { useResources } from "@/lib/cms";
 
 export default function Resources() {
+  const resources = useResources();
   const [params] = useSearchParams();
   const [query, setQuery] = useState(params.get("q") || "");
   const [category, setCategory] = useState("All");
@@ -25,7 +28,7 @@ export default function Resources() {
       const matchCountry = country === "All" || r.country === country || r.country === "All";
       return matchQuery && matchCat && matchCountry;
     });
-  }, [query, category, country]);
+  }, [query, category, country, resources]);
 
   function toggle(title) {
     setExpanded((e) => ({ ...e, [title]: !e[title] }));
@@ -33,6 +36,7 @@ export default function Resources() {
 
   return (
     <>
+      <Seo title="Resources & Business Guides — Abrielex Business Consultancy" description="Business guides, compliance information, document checklists and articles to help Zimbabwean businesses understand registration, tax, procurement and compliance requirements." />
       <section className="border-b border-border bg-muted/30">
         <div className="mx-auto max-w-4xl px-6 py-16 text-center">
           <div className="mb-4 flex items-center justify-center gap-3">

@@ -22,6 +22,7 @@ const STATIC_ROUTES = [
   { path: "/faq", priority: "0.6", changefreq: "monthly" },
   { path: "/get-a-quote", priority: "0.9", changefreq: "monthly" },
   { path: "/contact", priority: "0.8", changefreq: "monthly" },
+  { path: "/locations", priority: "0.7", changefreq: "monthly" },
   { path: "/privacy", priority: "0.3", changefreq: "yearly" },
   { path: "/terms", priority: "0.3", changefreq: "yearly" },
 ];
@@ -39,11 +40,33 @@ export default async function (req) {
     const base44 = createClientFromRequest(req);
     // SeoPage is public-read; the service role is used so the sitemap works
     // even when crawled without a session.
-    const seoRows = await base44.asServiceRole.entities.SeoPage.list("path", 500);
+    const [seoRows, serviceRows, locationRows] = await Promise.all([
+      base44.asServiceRole.entities.SeoPage.list("path", 500),
+      base44.asServiceRole.entities.ServiceCategory.filter({ active: true }, "sort_order", 200).catch(() => []),
+      base44.asServiceRole.entities.Location.filter({ active: true }, "sort_order", 500).catch(() => []),
+    ]);
 
     const byPath = new Map(STATIC_ROUTES.map((r) => [r.path, { ...r }]));
+
+    // Services -> /services/:slug (real pages)
+    for (const row of serviceRows) {
+      if (!row.slug || row.active === false) continue;
+      const path = `/services/${row.slug}`;
+      if (!byPath.has(path)) byPath.set(path, { path, priority: "0.8", changefreq: "monthly" });
+    }
+
+    // Locations -> /locations/:city-slug (real pages)
+    for (const row of locationRows) {
+      const citySlug = String(row.city || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      if (!citySlug) continue;
+      const path = `/locations/${citySlug}`;
+      if (!byPath.has(path)) byPath.set(path, { path, priority: "0.7", changefreq: "monthly" });
+    }
+
+    // SeoPage records (added/edited from Admin > SEO) override originals
     for (const row of seoRows) {
       if (!row.path || row.published === false) continue;
+      if ((row.robots || "").includes("noindex")) continue;
       const existing = byPath.get(row.path) || { path: row.path, priority: "0.5", changefreq: "monthly" };
       byPath.set(row.path, { ...existing, path: row.path });
     }
