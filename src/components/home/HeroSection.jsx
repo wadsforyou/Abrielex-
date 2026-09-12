@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { serviceCategories, companyInfo } from "@/lib/siteData";
+import { useServiceCategories, useCompanyInfo } from "@/lib/cms";
+import { useSiteContent } from "@/hooks/use-site-content";
 import { Image } from "@/components/ui/image";
 import { cn } from "@/lib/utils";
 
@@ -9,6 +10,9 @@ const HERO_IMG = "https://media.base44.com/images/public/6a9fbe96952aa2db4053eb1
 
 export default function HeroSection() {
   const [active, setActive] = useState(0);
+  const serviceCategories = useServiceCategories();
+  const companyInfo = useCompanyInfo();
+  const text = useSiteContent("home");
 
   return (
     <section className="relative overflow-hidden border-b border-border bg-card">
@@ -42,12 +46,10 @@ export default function HeroSection() {
             </span>
           </div>
           <h1 className="font-serif-display text-4xl font-bold leading-[1.05] text-foreground sm:text-5xl md:text-6xl lg:text-7xl text-balance">
-            Business registration, compliance, tax &amp; financial consultancy.
+            {text("hero_heading", "Business registration, compliance, tax & financial consultancy.")}
           </h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Abrielex Business Consultancy delivers professional company secretarial, tax,
-            procurement, bookkeeping and general business services — in person and online across
-            multiple cities in Zimbabwe. {companyInfo.tagline}.
+            {text("hero_description", "Abrielex Business Consultancy delivers professional company secretarial, tax, procurement, bookkeeping and general business services — in person and online across multiple cities in Zimbabwe. " + companyInfo.tagline + ".")}
           </p>
 
           <div className="mt-9 flex flex-wrap gap-3">

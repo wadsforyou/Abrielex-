@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Menu, X, Search, Phone } from "lucide-react";
 import Logo from "./Logo";
-import { companyInfo, telLink } from "@/lib/siteData";
+import { useCompanyInfo } from "@/lib/cms";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -20,6 +20,8 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
+  const companyInfo = useCompanyInfo();
+  const telLink = `tel:${companyInfo.phoneIntl}`;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -59,7 +61,7 @@ export default function Header() {
           <div className="flex items-center gap-4">
             <Link to="/get-a-quote" className="font-medium hover:text-white">Get a Quote / Book a Consultation</Link>
             <span className="text-white/30">·</span>
-            
+
           </div>
         </div>
       </div>
@@ -70,7 +72,7 @@ export default function Header() {
           "border-b border-border bg-card/95 backdrop-blur transition-shadow",
           scrolled && "shadow-sm"
         )}>
-        
+
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-1 sm:px-6">
           <Link to="/" className="flex items-center" aria-label="Abrielex home">
             <Logo className="h-[72px]" />
@@ -88,7 +90,7 @@ export default function Header() {
                 isActive ? "text-primary" : "text-foreground/80"
               )
               }>
-              
+
                 {l.label}
               </NavLink>
             )}
@@ -100,13 +102,13 @@ export default function Header() {
               onClick={() => setSearchOpen((s) => !s)}
               aria-label="Search"
               className="flex h-10 w-10 items-center justify-center rounded-md text-foreground hover:bg-accent">
-              
+
               <Search className="h-4 w-4" />
             </button>
             <Link
               to="/contact"
               className="hidden items-center bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90 lg:flex">
-              
+
               Contact Us
             </Link>
             <button
@@ -114,7 +116,7 @@ export default function Header() {
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
               className="flex h-10 w-10 items-center justify-center rounded-md text-foreground hover:bg-accent lg:hidden">
-              
+
               <Menu className="h-5 w-5" />
             </button>
           </div>
@@ -131,7 +133,7 @@ export default function Header() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search resources, services, guides…"
               className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground" />
-            
+
               <button type="submit" className="text-sm font-semibold text-primary">Search</button>
             </form>
           </div>
@@ -162,7 +164,7 @@ export default function Header() {
                 isActive ? "text-primary" : "text-foreground"
               )
               }>
-              
+
                   {l.label}
                 </NavLink>
             )}

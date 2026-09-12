@@ -1,8 +1,10 @@
 import React from "react";
 import { MessageCircle } from "lucide-react";
-import { whatsappLink } from "@/lib/siteData";
+import { useCompanyInfo } from "@/lib/cms";
 
 export default function WhatsAppButton() {
+  const companyInfo = useCompanyInfo();
+  const whatsappLink = `https://wa.me/${companyInfo.whatsappIntl}`;
   return (
     <a
       href={whatsappLink}

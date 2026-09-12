@@ -14,7 +14,16 @@
     "category": {
       "type": "string"
     },
+    "country": {
+      "type": "string"
+    },
     "country_code": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string"
+    },
+    "content": {
       "type": "string"
     },
     "type": {

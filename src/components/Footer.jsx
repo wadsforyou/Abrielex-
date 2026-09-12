@@ -2,17 +2,16 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, MessageCircle, Facebook } from "lucide-react";
 import Logo from "./Logo";
-import {
-  companyInfo,
-  whatsappLink,
-  telLink,
-  mailLink,
-  serviceCategories,
-} from "@/lib/siteData";
 import { useSiteContent } from "@/hooks/use-site-content";
+import { useCompanyInfo, useServiceCategories } from "@/lib/cms";
 
 export default function Footer() {
   const text = useSiteContent("footer");
+  const companyInfo = useCompanyInfo();
+  const serviceCategories = useServiceCategories();
+  const whatsappLink = `https://wa.me/${companyInfo.whatsappIntl}`;
+  const telLink = `tel:${companyInfo.phoneIntl}`;
+  const mailLink = `mailto:${companyInfo.email}`;
   const year = new Date().getFullYear();
   return (
     <footer className="border-t border-border bg-foreground text-white/80">

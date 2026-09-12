@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Save, Loader2, Mail, MessageCircle, Bell } from "lucide-react";
-import { PageHeader, Card, Loader, inputClass } from "@/components/portal/ui";
+import { Save, Loader2, Mail, MessageCircle, Bell, AlertTriangle } from "lucide-react";
+import { PageHeader, Card, Loader, EmptyState, inputClass } from "@/components/portal/ui";
 import { adminList } from "@/lib/adminData";
 
 export default function AdminSettings() {
   const [s, setS] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  useEffect(() => { (async () => {
+  async function load() {
+    setLoading(true);
+    setError("");
     try {
       const list = await adminList("NotificationSetting", "-created_date", 50);
       let rec = list.find((r) => r.key === "global") || list[0];
@@ -19,16 +22,34 @@ export default function AdminSettings() {
         rec = created.result;
       }
       setS(rec);
-    } catch {} finally { setLoading(false); }
-  })(); }, []);
+    } catch (e) {
+      setError(e?.response?.data?.error || e?.message || "Unable to load settings");
+    } finally { setLoading(false); }
+  }
+
+  useEffect(() => { load(); }, []);
 
   async function save() {
     setSaving(true);
-    try { await base44.functions.invoke("adminControl", { action: "entity_mutation", entity: "NotificationSetting", mutation: "update", id: s.id, data: s, auditDetails: "Global notification settings updated" }); setSaved(true); setTimeout(() => setSaved(false), 2500); }
-    catch (e) { alert("Failed: " + (e.message || "")); } finally { setSaving(false); }
+    setError("");
+    try {
+      await base44.functions.invoke("adminControl", { action: "entity_mutation", entity: "NotificationSetting", mutation: "update", id: s.id, data: s, auditDetails: "Global notification settings updated" });
+      setSaved(true); setTimeout(() => setSaved(false), 2500);
+    } catch (e) {
+      setError(e?.response?.data?.error || e?.message || "Failed to save settings");
+    } finally { setSaving(false); }
   }
 
-  if (loading || !s) return <Loader />;
+  if (loading) return <Loader />;
+
+  if (error && !s) {
+    return (
+      <div>
+        <PageHeader title="Settings" subtitle="Notification channels, email & WhatsApp configuration" />
+        <EmptyState icon={AlertTriangle} title="Could not load settings" message={error} action={<button onClick={load} className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white">Retry</button>} />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -70,6 +91,7 @@ export default function AdminSettings() {
           </div>
         </Card>
       </div>
+      {error && <p className="mt-4 rounded-md border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</p>}
       <div className="mt-6 flex items-center gap-3">
         <button onClick={save} disabled={saving} className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save settings</button>
         {saved && <span className="text-sm text-emerald-600">Saved.</span>}

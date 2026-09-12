@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { coveragePoints } from "@/lib/siteData";
+import { coveragePoints as fallbackPoints } from "@/lib/siteData";
+import { useLocations } from "@/lib/cms";
 import { cn } from "@/lib/utils";
 import { MousePointerClick, Map as MapIcon } from "lucide-react";
 
@@ -12,8 +13,24 @@ function project(lng, lat) {
   return { x, y };
 }
 
-export default function CoverageMap({ className }) {
+// A map point is only usable if it has finite lat/lng. Database rows created
+// before the map coordinates were added will not, so we filter those out and
+// top up from the known coverage list when needed.
+function isMappable(p) {
+  return !!p && Number.isFinite(Number(p.lat)) && Number.isFinite(Number(p.lng));
+}
+
+function resolvePoints(points, dbPoints) {
+  const source = points || dbPoints || fallbackPoints;
+  const usable = source.filter(isMappable).map((p) => ({ ...p, lat: Number(p.lat), lng: Number(p.lng) }));
+  if (usable.length) return usable;
+  return fallbackPoints.filter(isMappable);
+}
+
+export default function CoverageMap({ className, points }) {
   const [active, setActive] = useState(false);
+  const dbPoints = useLocations();
+  const coveragePoints = resolvePoints(points, dbPoints);
 
   if (active) {
     return (

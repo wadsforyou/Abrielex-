@@ -8,12 +8,12 @@ export default function AdminResources() {
       title="Resources"
       subtitle="Guides, checklists & templates in the knowledge centre"
       defaultSort="-created_date"
-      searchKeys={["title", "category", "country_code"]}
+      searchKeys={["title", "category", "country"]}
       columns={[
         { key: "title", label: "Title" },
         { key: "category", label: "Category" },
         { key: "type", label: "Type", render: (r) => <span className="capitalize">{r.type}</span> },
-        { key: "country_code", label: "Country" },
+        { key: "country", label: "Country" },
         { key: "published", label: "Published", render: (r) => (r.published ? "✓" : "—") },
       ]}
       fields={[
@@ -22,7 +22,10 @@ export default function AdminResources() {
         { key: "category", label: "Category", required: true },
         { key: "type", label: "Type", type: "select", options: ["guide", "checklist", "template", "article", "video"].map((t) => ({ value: t, label: t })) },
         { key: "country_code", label: "Country code (blank = all)" },
+        { key: "country", label: "Country name (use 'All' for all countries)" },
         { key: "summary", label: "Summary", type: "textarea", span: 2 },
+        { key: "date", label: "Date" },
+        { key: "content", label: "Content (one paragraph per line)", type: "textarea", span: 2 },
         { key: "file_url", label: "File", type: "file", span: 2 },
         { key: "sort_order", label: "Sort order", type: "number" },
         { key: "published", label: "Published", type: "boolean" },

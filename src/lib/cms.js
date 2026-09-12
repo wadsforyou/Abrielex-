@@ -19,6 +19,7 @@ import {
 // database value wins — the database is the single source of truth.
 // ---------------------------------------------------------------------------
 
+// One value per line (benefits, requirements, process, documents).
 function asList(value) {
   if (Array.isArray(value)) return value;
   return String(value || "")
@@ -27,17 +28,45 @@ function asList(value) {
     .filter(Boolean);
 }
 
-// Split a "Title\nDescription" block list into { name/title, description } items.
-function asPairs(value) {
+// Comma- OR newline-separated identifiers (related slugs).
+function asTokens(value) {
+  if (Array.isArray(value)) return value.map((v) => String(v).trim()).filter(Boolean);
+  return String(value || "")
+    .split(/[,\n]/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+// Sub-services are stored as one per line: "Name :: Description".
+function asSubServices(value) {
+  return asList(value)
+    .map((line) => {
+      const [name, ...rest] = line.split("::");
+      return { name: (name || "").trim(), description: rest.join("::").trim() };
+    })
+    .filter((item) => item.name);
+}
+
+// FAQs are stored as blocks separated by a blank line: "Question\nAnswer".
+function asFaqs(value) {
   const raw = String(value || "").trim();
   if (!raw) return [];
   return raw
     .split(/\n\s*\n/)
-    .map((chunk) => {
-      const [head, ...rest] = chunk.split("\n");
-      return { name: (head || "").trim(), title: (head || "").trim(), description: rest.join(" ").trim() };
+    .map((block) => {
+      const [question, ...rest] = block.split("\n");
+      return { q: (question || "").trim(), a: rest.join("\n").trim() };
     })
-    .filter((item) => item.name);
+    .filter((item) => item.q);
+}
+
+// Long-form content: one paragraph per blank-line-separated block, or one per line.
+function asParagraphs(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return [];
+  const byBlank = raw.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+  if (byBlank.length > 1) return byBlank;
+  return asList(raw);
 }
 
 // --- Server-side (SDK) readers ---------------------------------------------
@@ -85,9 +114,9 @@ export function normaliseCategory(row) {
     process: asList(row.process),
     documents: asList(row.documents),
     processingTime: row.processing_time || "",
-    faqs: asPairs(row.faqs).map((p) => ({ q: p.name, a: p.description })),
-    subServices: asPairs(row.sub_services).map((p) => ({ name: p.name, description: p.description })),
-    related: asList(row.related),
+    faqs: asFaqs(row.faqs),
+    subServices: asSubServices(row.sub_services),
+    related: asTokens(row.related),
   };
 }
 
@@ -104,13 +133,22 @@ export function normaliseResource(row) {
     country: row.country || "All",
     type: row.type ? row.type.charAt(0).toUpperCase() + row.type.slice(1) : "Guide",
     date: row.date || "",
-    content: asList(row.content),
+    content: asParagraphs(row.content),
     file_url: row.file_url || "",
   };
 }
 
-export function normaliseLocation(row) {
-  return { city: row.city, lat: row.lat, lng: row.lng, primary: !!row.primary };
+// Location records may or may not carry map coordinates (the seeded records do
+// not). `city` falls back to the province/state label when the city is blank.
+function normaliseLocation(row) {
+  const lat = Number(row.lat);
+  const lng = Number(row.lng);
+  return {
+    city: row.city || row.state || "",
+    lat: Number.isFinite(lat) ? lat : undefined,
+    lng: Number.isFinite(lng) ? lng : undefined,
+    primary: !!row.primary,
+  };
 }
 
 // --- React hooks (DB-first with live-site fallback) ------------------------

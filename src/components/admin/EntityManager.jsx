@@ -51,6 +51,7 @@ export default function EntityManager({
 }) {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -59,11 +60,13 @@ export default function EntityManager({
 
   const load = useCallback(async () => {
     setLoading(true);
+    setLoadError("");
     try {
       const list = await adminFilter(entity, fixedFilters, defaultSort, DIALOG_LIMIT);
       setRows(list);
     } catch (e) {
       setRows([]);
+      setLoadError(e?.response?.data?.error || e?.message || "Unable to load records");
     } finally {
       setLoading(false);
     }
@@ -147,7 +150,9 @@ export default function EntityManager({
         <span className="text-xs text-muted-foreground">{visible.length} record{visible.length !== 1 ? "s" : ""}</span>
       </div>
 
-      {loading ? <Loader /> : visible.length === 0 ? (
+      {loading ? <Loader /> : loadError ? (
+        <EmptyState icon={Search} title="Could not load records" message={loadError} action={<button onClick={load} className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white">Retry</button>} />
+      ) : visible.length === 0 ? (
         <EmptyState icon={Search} title="No records" message="Nothing here yet. Create the first record or adjust your search." />
       ) : (
         <div className="overflow-x-auto rounded-lg border border-border bg-card">

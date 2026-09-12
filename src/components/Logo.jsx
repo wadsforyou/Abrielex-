@@ -1,8 +1,9 @@
 import React from "react";
-import { companyInfo } from "@/lib/siteData";
+import { useCompanyInfo } from "@/lib/cms";
 import { cn } from "@/lib/utils";
 
-export default function Logo({ className, variant = "default" }) {
+export default function Logo({ className }) {
+  const companyInfo = useCompanyInfo();
   return (
     <div className={cn("flex items-center", className)}>
       <img
