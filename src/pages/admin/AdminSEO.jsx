@@ -229,31 +229,31 @@ export default function AdminSEO() {
       {loading ? <Loader /> : visible.length === 0 ? (
         <EmptyState icon={Search} title="No SEO records" message="Create the first record, or run the content sync on the Overview page to auto-generate SEO records for every page, service and city." />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border bg-card">
-          <table className="w-full text-sm">
+        <div className="overflow-hidden rounded-lg border-border bg-card">
+          <table className="w-full table-fixed text-sm">
             <thead className="bg-muted/40 text-left text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
-                <th className="whitespace-nowrap px-4 py-3 font-semibold">Page</th>
-                <th className="whitespace-nowrap px-4 py-3 font-semibold">Path</th>
-                <th className="whitespace-nowrap px-4 py-3 font-semibold">SEO title</th>
-                <th className="whitespace-nowrap px-4 py-3 font-semibold">Keyword</th>
-                <th className="whitespace-nowrap px-4 py-3 font-semibold">Canonical</th>
-                <th className="whitespace-nowrap px-4 py-3 font-semibold">Status</th>
+                <th className="px-3 py-3 font-semibold">Page</th>
+                <th className="px-3 py-3 font-semibold">Path</th>
+                <th className="px-3 py-3 font-semibold">SEO title</th>
+                <th className="px-3 py-3 font-semibold">Keyword</th>
+                <th className="px-3 py-3 font-semibold">Canonical</th>
+                <th className="px-3 py-3 font-semibold">Status</th>
                 <th className="px-4 py-3 text-right font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {visible.map((r) => (
                 <tr key={r.id} className="hover:bg-muted/30">
-                  <td className="px-4 py-3 font-medium">{r.page_title || "—"}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{r.path}</td>
-                  <td className="px-4 py-3 text-xs"><span className="max-w-[280px] block truncate">{r.seo_title || "—"}</span></td>
-                  <td className="px-4 py-3 text-xs">{r.primary_keyword || r.focus_keyword || "—"}</td>
-                  <td className="px-4 py-3 text-xs">
+                  <td className="break-words px-3 py-3 font-medium">{r.page_title || "—"}</td>
+                  <td className="break-words px-3 py-3 font-mono text-xs text-muted-foreground">{r.path}</td>
+                  <td className="break-words px-3 py-3 text-xs">{r.seo_title || "—"}</td>
+                  <td className="break-words px-3 py-3 text-xs">{r.primary_keyword || r.focus_keyword || "—"}</td>
+                  <td className="break-words px-3 py-3 text-xs">
                     {r.canonical_url ? <span className="text-primary" title={r.canonical_url}>{r.canonical_url.replace(SITE_URL, "")}</span> : "—"}
                   </td>
-                  <td className="px-4 py-3"><StatusBadge row={r} /></td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-3 py-3"><StatusBadge row={r} /></td>
+                  <td className="px-3 py-3 text-right">
                     <div className="flex justify-end gap-1">
                       <button onClick={() => openEdit(r)} className="rounded p-1.5 text-muted-foreground hover:bg-accent hover:text-primary" aria-label="Edit"><Pencil className="h-4 w-4" /></button>
                       <button onClick={() => setDeleting(r)} className="rounded p-1.5 text-muted-foreground hover:bg-rose-50 hover:text-rose-600" aria-label="Delete"><Trash2 className="h-4 w-4" /></button>

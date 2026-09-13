@@ -245,8 +245,8 @@ export default function AdminNotificationRecipients() {
             No notification emails have been sent yet.
           </p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="overflow-hidden">
+            <table className="w-full table-fixed text-sm">
               <thead className="bg-muted/40 text-left text-xs uppercase tracking-wide text-muted-foreground">
                 <tr>
                   <th className="px-3 py-2 font-semibold">When</th>
@@ -262,7 +262,7 @@ export default function AdminNotificationRecipients() {
                   const Icon = style.icon;
                   return (
                     <tr key={d.id}>
-                      <td className="whitespace-nowrap px-3 py-2 text-xs text-muted-foreground">
+                      <td className="px-3 py-2 text-xs text-muted-foreground">
                         {d.created_date ? new Date(d.created_date).toLocaleString() : "—"}
                       </td>
                       <td className="px-3 py-2 text-xs capitalize">{String(d.event || "").replace(/_/g, " ")}</td>

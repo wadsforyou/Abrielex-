@@ -155,25 +155,25 @@ export default function EntityManager({
       ) : visible.length === 0 ? (
         <EmptyState icon={Search} title="No records" message="Nothing here yet. Create the first record or adjust your search." />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border bg-card">
-          <table className="w-full text-sm">
+        <div className="overflow-hidden rounded-lg border-border bg-card">
+          <table className="w-full table-fixed text-sm">
             <thead className="bg-muted/40 text-left text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
                 {columns.map((c) => (
-                  <th key={c.key} className="whitespace-nowrap px-4 py-3 font-semibold">{c.label}</th>
+                  <th key={c.key} className="px-3 py-3 font-semibold">{c.label}</th>
                 ))}
-                {hasActions && <th className="px-4 py-3 text-right font-semibold">Actions</th>}
+                {hasActions && <th className="w-20 px-3 py-3 text-right font-semibold">Actions</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {visible.map((r) => (
                 <tr key={r.id} className="hover:bg-muted/30">
                   {columns.map((c) => (
-                    <td key={c.key} className="px-4 py-3 align-top">
+                    <td key={c.key} className="break-words px-3 py-3 align-top">
                       {c.render ? c.render(r) : (r[c.key] ?? "—")}
                     </td>
                   ))}
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-3 py-3 text-right">
                     <div className="flex justify-end gap-1">
                       {canEdit && (
                         <button onClick={() => openEdit(r)} className="rounded p-1.5 text-muted-foreground hover:bg-accent hover:text-primary" aria-label="Edit">

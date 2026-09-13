@@ -13,7 +13,7 @@ export default function AdminContent() {
         { key: "label", label: "Label" },
         { key: "key", label: "Key" },
         { key: "section", label: "Section" },
-        { key: "value", label: "Value", render: (r) => <span className="max-w-md truncate text-xs text-muted-foreground">{r.value}</span> },
+        { key: "value", label: "Value", render: (r) => <span className="line-clamp-2 break-words text-xs text-muted-foreground">{r.value}</span> },
       ]}
       fields={[
         { key: "key", label: "Key (e.g. home.intro_title)", required: true },

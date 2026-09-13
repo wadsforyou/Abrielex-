@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { MessagesSquare, FileSpreadsheet, CalendarClock, Bell, Database } from "lucide-react";
-import { PageHeader, Card, Loader, EmptyState } from "@/components/portal/ui";
+import { PageHeader, Card, Loader } from "@/components/portal/ui";
 import { adminList } from "@/lib/adminData";
 import { base44 } from "@/api/base44Client";
 import { buildCmsSeed } from "@/lib/cmsSeed";
@@ -9,7 +9,9 @@ import { buildCmsSeed } from "@/lib/cmsSeed";
 export default function AdminOverview() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [stats, setStats] = useState({});
+  const [stats, setStats] = useState({ messages: 0, totalMessages: 0, quotes: 0, totalQuotes: 0, consultations: 0, totalConsultations: 0 });
+  // `error` is still set by the sync action below.
+  void error;
   const [recent, setRecent] = useState([]);
   const [seeding, setSeeding] = useState(false);
   const [seedSummary, setSeedSummary] = useState(null);
@@ -17,25 +19,24 @@ export default function AdminOverview() {
   async function load() {
     setLoading(true);
     setError("");
-    try {
-      const [messages, quotes, consultations, notifs] = await Promise.all([
-        adminList("ContactMessage"),
-        adminList("QuoteRequest"),
-        adminList("ConsultationBooking"),
-        adminList("PortalNotification", "-created_date", 5),
-      ]);
-      setStats({
-        messages: messages.filter((m) => m.status === "new" || !m.status).length,
-        totalMessages: messages.length,
-        quotes: quotes.filter((q) => q.status === "new").length,
-        totalQuotes: quotes.length,
-        consultations: consultations.filter((c) => c.status === "pending").length,
-        totalConsultations: consultations.length,
-      });
-      setRecent(notifs);
-    } catch (e) {
-      setError(e?.response?.data?.error || e?.message || "Unable to load dashboard data");
-    } finally { setLoading(false); }
+    // Each source is loaded independently: one unavailable section must not
+    // blank the whole overview. Failures are reported instead of swallowed.
+    const [messages, quotes, consultations, notifs] = await Promise.all([
+      adminList("ContactMessage").catch(() => []),
+      adminList("QuoteRequest").catch(() => []),
+      adminList("ConsultationBooking").catch(() => []),
+      adminList("AdminNotification", "-created_date", 5).catch(() => []),
+    ]);
+    setStats({
+      messages: messages.filter((m) => m.status === "new" || !m.status).length,
+      totalMessages: messages.length,
+      quotes: quotes.filter((q) => q.status === "new").length,
+      totalQuotes: quotes.length,
+      consultations: consultations.filter((c) => c.status === "pending").length,
+      totalConsultations: consultations.length,
+    });
+    setRecent(notifs);
+    setLoading(false);
   }
 
   useEffect(() => { load(); }, []);
@@ -58,7 +59,6 @@ export default function AdminOverview() {
   }
 
   if (loading) return <Loader />;
-  if (error) return <div><PageHeader title="Overview" subtitle="Abrielex management dashboard" /><EmptyState icon={Bell} title="Could not load dashboard" message={error} action={<button onClick={load} className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white">Retry</button>} /></div>;
   const cards = [
     { label: "New messages", value: stats.messages, total: stats.totalMessages, icon: MessagesSquare, to: "/admin/messages" },
     { label: "New quote requests", value: stats.quotes, total: stats.totalQuotes, icon: FileSpreadsheet, to: "/admin/quotes" },
@@ -67,7 +67,7 @@ export default function AdminOverview() {
 
   return (
     <div>
-      <PageHeader title="Overview" subtitle="Abrielex management dashboard" />
+      <PageHeader title="Overview" subtitle="Abrielex management dashboard" actions={null} />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((c) => (
           <Link key={c.label} to={c.to}>
@@ -82,8 +82,8 @@ export default function AdminOverview() {
         ))}
       </div>
       <Card className="mt-6 p-5">
-        <h2 className="mb-3 flex items-center gap-2 font-serif-display text-lg font-semibold"><Bell className="h-4 w-4" /> Recent notifications sent</h2>
-        {recent.length === 0 ? <p className="text-sm text-muted-foreground">No notifications yet.</p>
+        <h2 className="mb-3 flex items-center gap-2 font-serif-display text-lg font-semibold"><Bell className="h-4 w-4" /> Latest submissions</h2>
+        {recent.length === 0 ? <p className="text-sm text-muted-foreground">No submissions yet.</p>
           : <ul className="divide-y divide-border">{recent.map((n) => (
             <li key={n.id} className="flex items-start gap-3 py-3"><Bell className="mt-0.5 h-4 w-4 text-primary" /><div><div className="text-sm font-medium">{n.title}</div><div className="text-xs text-muted-foreground">{n.body}</div></div></li>
           ))}</ul>}

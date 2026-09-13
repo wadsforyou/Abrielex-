@@ -8,6 +8,7 @@ import { canAccess, setRoleOverrides } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/Logo";
 import NotificationBell from "@/components/admin/NotificationBell";
+import AdminErrorBoundary from "@/components/admin/AdminErrorBoundary";
 
 export default function AdminShell() {
   const { user, logout } = useAuth();
@@ -101,8 +102,10 @@ export default function AdminShell() {
             <span className="hidden text-xs text-slate-500 sm:inline">{user?.email}</span>
           </div>
         </header>
-        <main className="px-4 py-6 sm:px-6">
-          <Outlet />
+        <main className="min-w-0 max-w-full overflow-x-hidden px-4 py-6 sm:px-6">
+          <AdminErrorBoundary>
+            <Outlet />
+          </AdminErrorBoundary>
         </main>
       </div>
     </div>
