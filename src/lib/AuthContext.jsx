@@ -27,7 +27,9 @@ export const AuthProvider = ({ children }) => {
         setAppPublicSettings(publicSettings);
         
         // If we got the app public settings successfully, check if user is authenticated
-        if (appParams.token) {
+        // Re-read the token: appParams is captured at module load, so a token
+        // written by a later login would otherwise be missed.
+        if (appParams.token || (typeof window !== 'undefined' && window.localStorage && window.localStorage.getItem('base44_access_token'))) {
           await checkUserAuth();
         } else {
           setIsLoadingAuth(false);
@@ -37,7 +39,7 @@ export const AuthProvider = ({ children }) => {
         setIsLoadingPublicSettings(false);
       } catch (appError) {
         console.error('App state check failed:', appError);
-        
+
         // Handle app-level errors
         if (appError.status === 403 && appError.data?.extra_data?.reason) {
           const reason = appError.data.extra_data.reason;
@@ -91,12 +93,22 @@ export const AuthProvider = ({ children }) => {
       setIsLoadingAuth(false);
       setIsAuthenticated(false);
       setAuthChecked(true);
-      
-      // If user auth fails, it might be an expired token
-      if (error.status === 401 || error.status === 403) {
+
+      // A 401/403 means the stored session token is expired or no longer valid.
+      // Leaving it in place keeps every later request failing with 401 and the
+      // dashboard looking broken, so discard it here; the route guards then send
+      // the administrator to the login page for a clean sign-in.
+      const status = error?.status || error?.response?.status;
+      if (status === 401 || status === 403) {
+        try {
+          window.localStorage.removeItem('base44_access_token');
+          window.localStorage.removeItem('token');
+        } catch {
+          // Storage can be unavailable in private modes; nothing else to do.
+        }
         setAuthError({
           type: 'auth_required',
-          message: 'Authentication required'
+          message: 'Your session has expired. Please sign in again.'
         });
       }
     }
