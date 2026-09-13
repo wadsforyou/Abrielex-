@@ -19,7 +19,7 @@ export default function AdminCases() {
 
   async function load() {
     setLoading(true);
-    try { setCases(await adminFilter("ServiceCase", {}, "-created_date", 500)); }
+    try { setCases(await adminFilter("ServiceCase", {}, "-created_date", 200)); }
     catch {} finally { setLoading(false); }
   }
   useEffect(() => { load(); }, []);

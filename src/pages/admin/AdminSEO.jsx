@@ -4,7 +4,7 @@ import { Search, Plus, Pencil, Trash2, X, Loader2, CheckCircle2, AlertTriangle, 
 import { PageHeader, Card, Loader, EmptyState, inputClass } from "@/components/portal/ui";
 import { adminFilter } from "@/lib/adminData";
 
-const DIALOG_LIMIT = 500;
+const DIALOG_LIMIT = 100;
 const SITE_URL = "https://abrielex.wads-foryou.workers.dev";
 
 // ---------------------------------------------------------------------------
@@ -121,7 +121,7 @@ export default function AdminSEO() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    try { setRows(await adminFilter("SeoPage", {}, "path", DIALOG_LIMIT)); }
+    try { setRows(await adminFilter("SeoPage", {}, "path", 200)); }
     catch { setRows([]); }
     finally { setLoading(false); }
   }, []);

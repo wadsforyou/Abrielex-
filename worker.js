@@ -30,6 +30,26 @@ function sitemap() {
 
 const ASSET_EXT = /\.[a-z0-9]+$/i;
 
+// The Base44 API regularly takes 1.5-2.5s per call. Cloudflare fails a Worker
+// that stalls, which surfaced as intermittent 504s on the dashboard, so each
+// upstream attempt is bounded and retried once before giving up.
+const ATTEMPT_TIMEOUT_MS = 12000;
+const MAX_ATTEMPTS = 2;
+
+function isRetryable(status) {
+  return status === 502 || status === 503 || status === 504 || status === 522 || status === 524;
+}
+
+async function attempt(target, init) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ATTEMPT_TIMEOUT_MS);
+  try {
+    return await fetch(target, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function proxyApi(request) {
   const url = new URL(request.url);
   const target = new URL(url.pathname + url.search, API_ORIGIN);
@@ -37,12 +57,40 @@ async function proxyApi(request) {
   const headers = new Headers(request.headers);
   headers.set("host", new URL(API_ORIGIN).host);
 
-  const init = { method: request.method, headers, redirect: "manual" };
+  const baseInit = { method: request.method, headers, redirect: "manual" };
+  // A request body can only be read once, so buffer it for a possible retry.
+  let bodyBuffer = null;
   if (request.method !== "GET" && request.method !== "HEAD") {
-    init.body = await request.arrayBuffer();
+    bodyBuffer = await request.arrayBuffer();
   }
 
-  const upstream = await fetch(target.toString(), init);
+  let upstream = null;
+  let lastError = null;
+
+  for (let i = 0; i < MAX_ATTEMPTS; i++) {
+    try {
+      const init = bodyBuffer ? { ...baseInit, body: bodyBuffer } : baseInit;
+      const res = await attempt(target.toString(), init);
+      // Retry a transient gateway error, otherwise use this response.
+      if (i < MAX_ATTEMPTS - 1 && isRetryable(res.status)) {
+        lastError = "upstream " + res.status;
+        continue;
+      }
+      upstream = res;
+      break;
+    } catch (e) {
+      lastError = (e && e.message) || "upstream_fetch_failed";
+      if (i >= MAX_ATTEMPTS - 1) break;
+    }
+  }
+
+  if (!upstream) {
+    // Honest failure: the caller gets a real error, never a silent success.
+    return Response.json(
+      { error: "upstream_unavailable", detail: lastError || "no response from backend" },
+      { status: 504 }
+    );
+  }
 
   const out = new Headers(upstream.headers);
   out.delete("content-encoding");

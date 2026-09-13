@@ -4,7 +4,11 @@ import { Plus, Pencil, Trash2, X, Search, Loader2 } from "lucide-react";
 import { PageHeader, Loader, EmptyState, inputClass } from "@/components/portal/ui";
 import { adminFilter } from "@/lib/adminData";
 
-const DIALOG_LIMIT = 500;
+// The dashboard previously requested up to 500 rows per page. Combined with
+// the Base44 API's 1.5-2.5s response time, that heavy parallel load is what
+// produced intermittent gateway timeouts. A smaller page loads quickly and is
+// far easier to read; the search box filters what is shown.
+const DIALOG_LIMIT = 100;
 
 function FieldInput({ field, value, onChange, options }) {
   const [uploading, setUploading] = useState(false);

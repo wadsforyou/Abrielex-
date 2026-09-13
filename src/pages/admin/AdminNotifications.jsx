@@ -33,7 +33,7 @@ export default function AdminNotifications() {
   async function load() {
     setLoading(true);
     try {
-      setItems(await adminList("AdminNotification", "-created_date", 200));
+      setItems(await adminList("AdminNotification", "-created_date", 100));
     } catch {
       setItems([]);
     } finally {

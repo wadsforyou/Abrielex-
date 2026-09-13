@@ -18,7 +18,7 @@ export default function AdminMessages() {
     setLoading(true);
     setError("");
     try {
-      setRows(await adminList("ContactMessage", "-created_date", 500));
+      setRows(await adminList("ContactMessage", "-created_date", 200));
     } catch (e) {
       setError(e?.response?.data?.error || e?.message || "Unable to load messages");
     } finally {

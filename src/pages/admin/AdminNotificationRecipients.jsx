@@ -69,7 +69,7 @@ export default function AdminNotificationRecipients() {
     try {
       const [list, log] = await Promise.all([
         adminList("NotificationSetting", "-created_date", 50),
-        adminList("NotificationDelivery", "-created_date", 100).catch(() => []),
+        adminList("NotificationDelivery", "-created_date", 50).catch(() => []),
       ]);
       setSettings(list.find((r) => r.key === "global") || list[0] || { key: "global" });
       setDeliveries(log);
