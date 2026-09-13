@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import { safeReturnTo } from "@/lib/authReturnTo";
+import { Noindex } from "@/components/Seo";
 
 function resolveReturnTo(fallback = "/") {
   const raw = new URLSearchParams(window.location.search).get("returnTo");
@@ -44,16 +45,18 @@ export default function Login() {
   }
 
   return (
-    <AuthLayout
-      icon={LogIn}
-      title="Sign in"
-      subtitle="Abrielex Business Consultancy"
-      footer={
-        <Link to="/forgot-password" className="font-medium text-muted-foreground hover:text-primary hover:underline">
-          Forgot password?
-        </Link>
-      }
-    >
+    <>
+      <Noindex />
+      <AuthLayout
+        icon={LogIn}
+        title="Sign in"
+        subtitle="Abrielex Business Consultancy"
+        footer={
+          <Link to="/forgot-password" className="font-medium text-muted-foreground hover:text-primary hover:underline">
+            Forgot password?
+          </Link>
+        }
+      >
       {error && (
         <div className="mb-4 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
       )}
@@ -88,5 +91,6 @@ export default function Login() {
         </Button>
       </form>
     </AuthLayout>
+    </>
   );
 }

@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
-
-const SITE_URL = "https://abrielex.wads-foryou.workers.dev";
-const ORG_NAME = "Abrielex Business Consultancy";
-const LOGO_URL = "https://media.base44.com/images/public/user_6a87c5f2c8a0dd45c2e8e73b/8a0351310_Abrielex_logo.svg";
+import { SITE_URL, ORG_NAME, ORG_EMAIL, ORG_PHONE, ORG_ADDRESS, LOGO_URL } from "@/lib/seoConfig";
 
 // ---------------------------------------------------------------------------
 // STRUCTURED DATA HELPERS
@@ -27,18 +24,40 @@ function organizationSchema() {
     url: SITE_URL,
     logo: LOGO_URL,
     image: LOGO_URL,
-    telephone: "+263292263415",
-    email: "abrielexconsultancy@gmail.com",
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "Office No. 116, Lutheran House, L/Takawira & Herbert Chitepo",
-      addressLocality: "Bulawayo",
-      addressCountry: "ZW",
-    },
+    telephone: ORG_PHONE,
+    email: ORG_EMAIL,
+    address: { "@type": "PostalAddress", ...ORG_ADDRESS },
+    areaServed: { "@type": "Country", name: "Zimbabwe" },
     sameAs: [
       "https://www.tiktok.com/@abrielexconsultancy",
       "https://www.facebook.com/profile.php?id=AbrielexBusinessConsultants",
     ],
+  };
+}
+
+// WebSite schema with SearchAction (site search runs via /resources?q=).
+function websiteSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: ORG_NAME,
+    url: SITE_URL,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: { "@type": "EntryPoint", urlTemplate: `${SITE_URL}/resources?q={search_term_string}` },
+      "query-input": "required name=search_term_string",
+    },
+  };
+}
+
+function webPageSchema(title, desc, path) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: title,
+    description: desc,
+    url: `${SITE_URL}${path === "/" ? "/" : path}`,
+    isPartOf: { "@type": "WebSite", name: ORG_NAME, url: SITE_URL },
   };
 }
 
@@ -96,6 +115,14 @@ function breadcrumbSchema(row, path) {
   };
 }
 
+// Paths that must never be indexed. The raw page component still renders
+// (or feeds its own title), but we always force noindex + nofollow here.
+const PRIVATE_PREFIXES = ["/admin", "/login", "/register", "/forgot-password", "/reset-password", "/oauth"];
+
+function isPrivatePath(path) {
+  return PRIVATE_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`) || path.startsWith(p));
+}
+
 // ---------------------------------------------------------------------------
 // SEO COMPONENT — DB-backed with structured data
 // ---------------------------------------------------------------------------
@@ -128,7 +155,10 @@ export default function Seo({
     const effectiveTitle = r.seo_title || r.page_title || title;
     const effectiveDescription = r.meta_description || description;
     const effectiveImage = r.og_image || r.social_image || image;
-    const effectiveRobots = r.robots || robots;
+    const privatePath = isPrivatePath(window.location.pathname);
+    const effectiveRobots = privatePath
+      ? "noindex,nofollow"
+      : r.robots || robots || "index,follow";
 
     if (effectiveTitle) document.title = effectiveTitle;
 
@@ -140,11 +170,9 @@ export default function Seo({
     };
 
     // Core
-    if (effectiveDescription) {
-      setMeta('meta[name="description"]', "name", "description", effectiveDescription);
-      setMeta('meta[property="og:description"]', "property", "og:description", effectiveDescription);
-    }
+    if (effectiveDescription) setMeta('meta[name="description"]', "name", "description", effectiveDescription);
     if (effectiveTitle) setMeta('meta[property="og:title"]', "property", "og:title", effectiveTitle);
+    // Explicit per-record OG values (when present) override the derived title/description.
     if (r.og_title) setMeta('meta[property="og:title"]', "property", "og:title", r.og_title);
     if (r.og_description) setMeta('meta[property="og:description"]', "property", "og:description", r.og_description);
     if (effectiveImage) setMeta('meta[property="og:image"]', "property", "og:image", effectiveImage);
@@ -156,8 +184,12 @@ export default function Seo({
     if (effectiveDescription) setMeta('meta[name="twitter:description"]', "name", "twitter:description", effectiveDescription);
     if (effectiveImage) setMeta('meta[name="twitter:image"]', "name", "twitter:image", effectiveImage);
 
-    // Canonical
-    const canonicalUrl = r.canonical_url || canonical || window.location.href.split("#")[0];
+    // Canonical — always absolute, on the official domain, no query params.
+    // A DB record's canonical is honoured only when it already points at the
+    // official domain; stale/legacy domains (e.g. the workers.dev origin) are
+    // ignored so the official domain always wins.
+    const recordCanonical = r.canonical_url && r.canonical_url.startsWith(SITE_URL) ? r.canonical_url : "";
+    const canonicalUrl = recordCanonical || canonical || `${SITE_URL}${window.location.pathname}`;
     let canonicalLink = document.head.querySelector('link[rel="canonical"]');
     if (!canonicalLink) {
       canonicalLink = document.createElement("link");
@@ -176,6 +208,12 @@ export default function Seo({
   const path = window.location.pathname;
   const schemas = [
     organizationSchema(),
+    websiteSchema(),
+    webPageSchema(
+      override?.seo_title || override?.page_title || title,
+      override?.meta_description || description,
+      path
+    ),
     breadcrumbSchema(override, path),
   ];
   if (override?.schema_type) {
@@ -189,4 +227,22 @@ export default function Seo({
       {schemas.map((s, idx) => jsonLdScript(s, idx))}
     </>
   );
+}
+
+// Standalone guard for pages that never render <Seo> (auth screens, OAuth,
+// missing/private routes). Forces noindex,nofollow so private pages stay out
+// of search engines even if some other code path sets document.title.
+export function Noindex() {
+  useEffect(() => {
+    let meta = document.head.querySelector('meta[name="robots"]');
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.setAttribute("name", "robots");
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute("content", "noindex,nofollow");
+    const canonicalLink = document.head.querySelector('link[rel="canonical"]');
+    if (canonicalLink) canonicalLink.setAttribute("href", `${SITE_URL}${window.location.pathname}`);
+  }, []);
+  return null;
 }

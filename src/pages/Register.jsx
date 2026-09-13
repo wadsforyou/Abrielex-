@@ -8,6 +8,7 @@ import { UserPlus, Mail, Lock, Loader2 } from "lucide-react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import AuthLayout from "@/components/AuthLayout";
 import { toast } from "@/components/ui/use-toast";
+import { Noindex } from "@/components/Seo";
 import { countries } from "@/lib/siteData";
 import { CLIENT_TYPES, ENTITY_TYPES } from "@/lib/portalConfig";
 

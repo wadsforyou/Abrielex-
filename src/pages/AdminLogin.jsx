@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ShieldCheck, Mail, Lock, Loader2 } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
+import { Noindex } from "@/components/Seo";
 
 export default function AdminLogin() {
   const { isAuthenticated, isLoadingAuth, authChecked, user, checkUserAuth } = useAuth();
@@ -44,14 +45,16 @@ export default function AdminLogin() {
   }
 
   return (
-    <AuthLayout
-      icon={ShieldCheck}
-      title="Staff & Admin Login"
-      subtitle="Abrielex management dashboard"
-      footer={
-        <Link to="/forgot-password" className="font-medium text-muted-foreground hover:text-primary hover:underline">Forgot password?</Link>
-      }
-    >
+    <>
+      <Noindex />
+      <AuthLayout
+        icon={ShieldCheck}
+        title="Staff & Admin Login"
+        subtitle="Abrielex management dashboard"
+        footer={
+          <Link to="/forgot-password" className="font-medium text-muted-foreground hover:text-primary hover:underline">Forgot password?</Link>
+        }
+      >
       {error && <div className="mb-4 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
@@ -75,5 +78,6 @@ export default function AdminLogin() {
         </Button>
       </form>
     </AuthLayout>
+    </>
   );
 }
