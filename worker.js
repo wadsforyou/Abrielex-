@@ -1,4 +1,20 @@
-const publicPaths = ["/", "/about", "/services", "/resources", "/faq", "/contact", "/get-a-quote", "/privacy", "/terms"];
+// The sitemap advertises the authoritative production domain (see
+// src/lib/seoConfig.js and each page's canonical URL), not whichever host
+// happened to serve the request — otherwise the sitemap and the canonicals
+// point at different origins and Google sees conflicting signals.
+const SITE_ORIGIN = "https://abrielexconsultancy.co.zw";
+const publicPaths = ["/", "/about", "/services", "/locations", "/resources", "/faq", "/contact", "/get-a-quote", "/privacy", "/terms"];
 const serviceSlugs = ["company-secretarial", "zimra-tax-customs", "praz-vendor-numbers", "bookkeeping-financial", "general-services"];
-function sitemap(origin) { const urls = [...publicPaths, ...serviceSlugs.map((slug) => `/services/${slug}`)]; return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map((path) => `<url><loc>${origin}${path}</loc></url>`).join("")}</urlset>`; }
-export default { fetch(request, env) { const url = new URL(request.url); if (url.pathname === "/sitemap.xml") return new Response(sitemap(url.origin), { headers: { "content-type": "application/xml; charset=UTF-8" } }); return env.ASSETS.fetch(request); } };
+const locationSlugs = ["bulawayo", "harare", "victoria-falls", "masvingo", "chiredzi"];
+function sitemap() { const urls = [...publicPaths, ...serviceSlugs.map((slug) => `/services/${slug}`), ...locationSlugs.map((slug) => `/locations/${slug}`)]; return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map((path) => `<url><loc>${SITE_ORIGIN}${path}</loc></url>`).join("")}</urlset>`; }
+const ASSET_EXT = /\.[a-z0-9]+$/i;
+
+async function serve(request, env) {
+  const url = new URL(request.url);
+  if (url.pathname === "/sitemap.xml") return new Response(sitemap(), { headers: { "content-type": "application/xml; charset=UTF-8" } }); const response = await env.ASSETS.fetch(request);
+  if (response.status !== 404 || ASSET_EXT.test(url.pathname)) return response;
+  const shell = await env.ASSETS.fetch(new Request(new URL("/index.html", url.origin), request));
+  return shell.status === 404 ? response : shell;
+}
+
+export default { fetch: serve };
