@@ -63,7 +63,15 @@ export default function Register() {
           company_name: form.company_name,
         });
       } catch { /* profile can be completed later in Settings */ }
-      window.location.href = "/portal";
+      // This app has no customer portal route, so /portal 404s. Send dashboard
+      // users (role "admin") to the dashboard and everyone else to the public
+      // home page, matching how the route guards behave.
+      let destination = "/";
+      try {
+        const me = await base44.auth.me();
+        if (me?.role === "admin") destination = "/admin";
+      } catch { /* fall back to the public home page */ }
+      window.location.href = destination;
     } catch (err) {
       setError(err.message || "Invalid verification code");
     } finally {
