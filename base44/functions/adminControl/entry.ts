@@ -53,8 +53,14 @@ async function seedCms(base44, seed, force) {
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
-    const actor = await base44.auth.me();
-    if (!actor || actor.role !== "admin") return Response.json({ error: "Admin access required" }, { status: 403 });
+    let actor = null;
+    try {
+      actor = await base44.auth.me();
+    } catch {
+      actor = null;
+    }
+    if (!actor) return Response.json({ error: "Authentication required" }, { status: 401 });
+    if (actor.role !== "admin") return Response.json({ error: "Admin access required" }, { status: 403 });
     const context = await getContext(base44, actor);
     const body = await req.json();
     const can = (permission) => context.owner || context.permissions.includes("*") || context.permissions.includes(permission) || context.permissions.includes("manage_settings");
@@ -127,6 +133,18 @@ export default async function(req) {
 
     return Response.json({ error: "Unsupported action" }, { status: 400 });
   } catch (error) {
-    return Response.json({ error: error.message || "Admin control failed" }, { status: 500 });
+    // An unauthenticated caller is not a server fault: auth.me() throws when no
+    // valid session is present. Report 401 with a truthful message rather than
+    // surfacing that thrown text as a 500.
+    const status = error?.status || error?.response?.status;
+    const message = error?.message || "Admin control failed";
+    const isAuth =
+      status === 401 ||
+      status === 403 ||
+      /authentication required|not authenticated|unauthor/i.test(message);
+    if (isAuth) {
+      return Response.json({ error: "Authentication required" }, { status: 401 });
+    }
+    return Response.json({ error: message }, { status: 500 });
   }
 }
