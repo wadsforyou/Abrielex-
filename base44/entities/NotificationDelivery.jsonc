@@ -1,0 +1,28 @@
+{
+  "name": "NotificationDelivery",
+  "type": "object",
+  "properties": {
+    "event": { "type": "string" },
+    "submission_entity": { "type": "string" },
+    "submission_id": { "type": "string" },
+    "dedupe_key": { "type": "string" },
+    "recipients": { "type": "string" },
+    "delivered": { "type": "string" },
+    "failed": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["sent", "partial", "failed", "no_recipient", "disabled", "skipped"]
+    },
+    "attempts": { "type": "number", "default": 1 },
+    "last_error": { "type": "string" },
+    "client_name": { "type": "string" },
+    "subject": { "type": "string" }
+  },
+  "required": ["event", "status"],
+  "rls": {
+    "read": { "user_condition": { "role": "admin" } },
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}

@@ -7,6 +7,7 @@ import { adminNav } from "@/lib/adminNav";
 import { canAccess, setRoleOverrides } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/Logo";
+import NotificationBell from "@/components/admin/NotificationBell";
 
 export default function AdminShell() {
   const { user, logout } = useAuth();
@@ -95,7 +96,10 @@ export default function AdminShell() {
             <button className="lg:hidden" onClick={() => setOpen(true)} aria-label="Open menu"><Menu className="h-5 w-5" /></button>
             <span className="font-serif-display text-sm font-semibold text-slate-800">Abrielex Admin</span>
           </div>
-          <div className="text-xs text-slate-500">{user?.email}</div>
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+            <span className="hidden text-xs text-slate-500 sm:inline">{user?.email}</span>
+          </div>
         </header>
         <main className="px-4 py-6 sm:px-6">
           <Outlet />

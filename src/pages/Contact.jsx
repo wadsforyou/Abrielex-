@@ -43,23 +43,27 @@ export default function Contact() {
     }
     setSubmitting(true);
     try {
-      await base44.entities.ContactMessage.create({
+      const created = await base44.entities.ContactMessage.create({
         ...form,
         country: "Zimbabwe",
         state: "",
         city: "",
         service_category: serviceTitle || "",
       });
-      await notifyAdmin("contact_message", {
-        client_name: form.name,
-        country: "Zimbabwe",
-        location: "—",
-        service_category: serviceTitle || "—",
-        subject: form.subject || "—",
-        email: form.email,
-        phone: form.phone || "—",
-        message: form.message,
-      });
+      await notifyAdmin(
+        "contact_message",
+        {
+          client_name: form.name,
+          country: "Zimbabwe",
+          location: "—",
+          service_category: serviceTitle || "—",
+          subject: form.subject || "—",
+          email: form.email,
+          phone: form.phone || "—",
+          message: form.message,
+        },
+        { submissionEntity: "ContactMessage", submissionId: created?.id || "" }
+      );
       setSubmitted(true);
       setForm({ name: "", email: "", phone: "", subject: "", message: "" });
     } catch {

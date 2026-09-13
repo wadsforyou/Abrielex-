@@ -33,6 +33,7 @@ import AdminShell from "./components/admin/AdminShell";
 import AdminOverview from "./pages/admin/AdminOverview";
 import AdminMessages from "./pages/admin/AdminMessages";
 import AdminNotifications from "./pages/admin/AdminNotifications";
+import AdminNotificationRecipients from "./pages/admin/AdminNotificationRecipients";
 import AdminQuotes from "./pages/admin/AdminQuotes";
 import AdminConsultations from "./pages/admin/AdminConsultations";
 import AdminServices from "./pages/admin/AdminServices";
@@ -88,6 +89,7 @@ function App() {
                   <Route path="/admin" element={<AdminOverview />} />
                   <Route path="/admin/messages" element={<AdminMessages />} />
                   <Route path="/admin/notifications" element={<AdminNotifications />} />
+                  <Route path="/admin/notification-recipients" element={<AdminNotificationRecipients />} />
                   <Route path="/admin/quotes" element={<AdminQuotes />} />
                   <Route path="/admin/consultations" element={<AdminConsultations />} />
                   <Route path="/admin/services" element={<AdminServices />} />

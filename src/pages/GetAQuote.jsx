@@ -151,23 +151,32 @@ function QuoteForm({ countryServices, preselectedCategory, preselectedSpecific }
     }
     setSubmitting(true);
     try {
-      await base44.entities.QuoteRequest.create({
+      const created = await base44.entities.QuoteRequest.create({
         ...form,
         country: "Zimbabwe",
         state: "",
         city: "",
         document_url: fileUrl || "",
       });
-      await notifyAdmin("quote_request", {
-        client_name: form.name,
-        service_category: form.service_category,
-        specific_service: form.specific_service || "—",
-        country: "Zimbabwe",
-        location: "—",
-        email: form.email,
-        phone: form.phone,
-        description: form.description,
-      });
+      await notifyAdmin(
+        "quote_request",
+        {
+          client_name: form.name,
+          service_category: form.service_category,
+          specific_service: form.specific_service || "—",
+          client_type: form.client_type,
+          entity_type: form.entity_type,
+          country: "Zimbabwe",
+          location: "—",
+          email: form.email,
+          phone: form.phone,
+          description: form.description,
+          additional_info: form.additional_info,
+          preferred_contact_method: form.preferred_contact_method,
+          document_url: fileUrl || "",
+        },
+        { submissionEntity: "QuoteRequest", submissionId: created?.id || "" }
+      );
       setSubmitted(true);
       window.scrollTo(0, 0);
     } catch (err) {
@@ -308,23 +317,29 @@ function ConsultationForm() {
     }
     setSubmitting(true);
     try {
-      await base44.entities.ConsultationBooking.create({
+      const created = await base44.entities.ConsultationBooking.create({
         ...form,
         country: "Zimbabwe",
         location: "",
         document_url: fileUrl || "",
       });
-      await notifyAdmin("consultation_booking", {
-        client_name: form.name,
-        consultation_type: form.consultation_type,
-        preferred_date: form.preferred_date,
-        preferred_time: form.preferred_time,
-        country: "Zimbabwe",
-        location: "—",
-        email: form.email,
-        phone: form.phone,
-        reason: form.reason || "—",
-      });
+      await notifyAdmin(
+        "consultation_booking",
+        {
+          client_name: form.name,
+          consultation_type: form.consultation_type,
+          preferred_date: form.preferred_date,
+          preferred_time: form.preferred_time,
+          country: "Zimbabwe",
+          location: "—",
+          email: form.email,
+          phone: form.phone,
+          whatsapp: form.whatsapp,
+          reason: form.reason || "—",
+          document_url: fileUrl || "",
+        },
+        { submissionEntity: "ConsultationBooking", submissionId: created?.id || "" }
+      );
       setSubmitted(true);
       window.scrollTo(0, 0);
     } catch {

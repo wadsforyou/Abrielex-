@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, MessagesSquare, Bell, FileSpreadsheet, CalendarClock,
-  Layers, BookOpen, HelpCircle, FileEdit, Mail, MapPin,
+  Layers, BookOpen, HelpCircle, FileEdit, Mail, MapPin, MailCheck,
   Settings, MessageCircle, ShieldCheck, Users, UserCog, Search, BarChart3, ClipboardList,
 } from "lucide-react";
 
@@ -8,6 +8,7 @@ export const adminNav = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, end: true, perm: "overview" },
   { to: "/admin/messages", label: "Messages", icon: MessagesSquare, perm: "messages" },
   { to: "/admin/notifications", label: "Notifications", icon: Bell, perm: "notifications" },
+  { to: "/admin/notification-recipients", label: "Notification Recipients", icon: MailCheck, perm: "notifications" },
   { to: "/admin/quotes", label: "Quote Requests", icon: FileSpreadsheet, perm: "quotes" },
   { to: "/admin/consultations", label: "Consultations", icon: CalendarClock, perm: "consultations" },
   { to: "/admin/services", label: "Services", icon: Layers, perm: "services" },

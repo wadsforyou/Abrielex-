@@ -1,0 +1,23 @@
+{
+  "name": "AdminNotification",
+  "type": "object",
+  "properties": {
+    "title": { "type": "string" },
+    "body": { "type": "string" },
+    "type": { "type": "string" },
+    "submission_type": {
+      "type": "string",
+      "enum": ["quote_request", "consultation_booking", "contact_message"]
+    },
+    "submission_id": { "type": "string" },
+    "link": { "type": "string" },
+    "read": { "type": "boolean", "default": false }
+  },
+  "required": ["title"],
+  "rls": {
+    "read": { "user_condition": { "role": "admin" } },
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}

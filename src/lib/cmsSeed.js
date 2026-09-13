@@ -2206,43 +2206,43 @@ export const cmsSeed = {
   {
     "event": "contact_message",
     "channel": "email",
-    "subject": "New Contact Enquiry — Abrielex Business Consultancy",
-    "body": "A new contact enquiry was received from {{client_name}}.\n\nSubject: {{subject}}\nService: {{service_category}}\nEmail: {{email}}\nPhone: {{phone}}\nMessage: {{message}}\n\nView in the admin dashboard: {{link}}",
+    "subject": "NEW CONTACT MESSAGE — ABRIELEX BUSINESS CONSULTANCY",
+    "body": "A new contact message was received from {{client_name}}.\n\nSubmission type: Contact\nClient name: {{client_name}}\nEmail address: {{email}}\nPhone: {{phone}}\nSubject: {{subject}}\nService: {{service_category}}\nLocation: {{location}}\nReceived: {{submitted_at}}\n\nMessage:\n{{message}}\n\nView and respond to this submission in the admin dashboard:\nhttps://abrielexconsultancy.co.zw/admin/messages",
     "active": true
   },
   {
     "event": "quote_request",
     "channel": "email",
-    "subject": "New Quote Request — Abrielex Business Consultancy",
-    "body": "A new quote request was received from {{client_name}}.\n\nService: {{service_category}}\nSpecific service: {{specific_service}}\nClient type: {{client_type}}\nEmail: {{email}}\nPhone: {{phone}}\nDescription: {{description}}\n\nView in the admin dashboard: {{link}}",
+    "subject": "NEW GET A QUOTE REQUEST — ABRIELEX BUSINESS CONSULTANCY",
+    "body": "A new Get a Quote request was received from {{client_name}}.\n\nSubmission type: Get a Quote\nClient name: {{client_name}}\nEmail address: {{email}}\nPhone: {{phone}}\nIndividual or business: {{client_type}}\nBusiness / entity type: {{entity_type}}\nService category: {{service_category}}\nSpecific service: {{specific_service}}\nPreferred contact method: {{preferred_contact_method}}\nLocation: {{location}}\nReceived: {{submitted_at}}\n\nDescription of requirement:\n{{description}}\n\nAdditional information:\n{{additional_info}}\n\nAttachment: {{document_url}}\n\nView and respond to this submission in the admin dashboard:\nhttps://abrielexconsultancy.co.zw/admin/quotes",
     "active": true
   },
   {
     "event": "consultation_booking",
     "channel": "email",
-    "subject": "New Consultation Booking — Abrielex Business Consultancy",
-    "body": "A new consultation booking was received from {{client_name}}.\n\nType: {{consultation_type}}\nPreferred date: {{preferred_date}}\nPreferred time: {{preferred_time}}\nEmail: {{email}}\nPhone: {{phone}}\nReason: {{reason}}\n\nView in the admin dashboard: {{link}}",
+    "subject": "NEW BOOK A CONSULTATION REQUEST — ABRIELEX BUSINESS CONSULTANCY",
+    "body": "A new consultation request was received from {{client_name}}.\n\nSubmission type: Book a Consultation\nClient name: {{client_name}}\nEmail address: {{email}}\nPhone: {{phone}}\nWhatsApp: {{whatsapp}}\nConsultation type: {{consultation_type}}\nPreferred date: {{preferred_date}}\nPreferred time: {{preferred_time}}\nLocation: {{location}}\nReceived: {{submitted_at}}\n\nReason for consultation:\n{{reason}}\n\nAttachment: {{document_url}}\n\nView and confirm this booking in the admin dashboard:\nhttps://abrielexconsultancy.co.zw/admin/consultations",
     "active": true
   },
   {
     "event": "contact_message",
     "channel": "inapp",
-    "subject": "New Contact Enquiry: {{client_name}}",
-    "body": "{{subject}} — {{service_category}}",
+    "subject": "New Contact Message from {{client_name}}",
+    "body": "{{client_name}} sent a contact message: {{subject}}",
     "active": true
   },
   {
     "event": "quote_request",
     "channel": "inapp",
-    "subject": "New Quote Request: {{client_name}}",
-    "body": "{{service_category}} — {{specific_service}}",
+    "subject": "New Get a Quote Request from {{client_name}}",
+    "body": "{{client_name}} requested {{specific_service}} ({{service_category}}).",
     "active": true
   },
   {
     "event": "consultation_booking",
     "channel": "inapp",
-    "subject": "New Consultation Booking: {{client_name}}",
-    "body": "{{consultation_type}} — {{preferred_date}} {{preferred_time}}",
+    "subject": "New Consultation Request from {{client_name}}",
+    "body": "{{client_name}} requested {{consultation_type}} on {{preferred_date}} at {{preferred_time}}.",
     "active": true
   }
 ],

@@ -35,6 +35,15 @@
     },
     "admin_notify_email": {
       "type": "string"
+    },
+    "quote_recipients": {
+      "type": "string"
+    },
+    "consultation_recipients": {
+      "type": "string"
+    },
+    "contact_recipients": {
+      "type": "string"
     }
   },
   "required": [
